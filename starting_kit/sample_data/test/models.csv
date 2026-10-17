@@ -1,0 +1,2 @@
+model_id,normalized_name,provider,release_date,access_date,harness,reasoning_effort,harness_version,subject_features_extra
+subject_001,Sample Model,Example Org,2026-01-01,2026-06-01,sample_harness,high,1.0,

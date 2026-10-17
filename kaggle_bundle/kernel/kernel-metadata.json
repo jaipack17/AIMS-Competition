@@ -1,0 +1,13 @@
+{
+  "id": "jaikaransingh12/paiec-qwen3-embed",
+  "title": "paiec qwen3 embed",
+  "code_file": "embed_qwen3.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["jaikaransingh12/paiec-sample-manifest"],
+  "competition_sources": [],
+  "kernel_sources": []
+}

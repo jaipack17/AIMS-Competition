@@ -1,0 +1,3 @@
+item_id,item_content,item_features,benchmark_id,interactors
+item_1,Choose the option that best completes the sample task.,tier=near-term,sample_benchmark,
+item_2,Answer whether the sample statement is likely correct.,tier=near-term,sample_benchmark,

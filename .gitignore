@@ -1,0 +1,18 @@
+# environment
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.ipynb_checkpoints/
+
+# data and generated artifacts (~4.6 GB; regenerate with scripts/)
+data/*
+!data/final_cv.json
+
+# build output and logs
+submission.zip
+nohup.out
+*.log
+
+# kaggle bundle outputs (keep notebook + metadata)
+kaggle_bundle/**/*.npz

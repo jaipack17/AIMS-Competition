@@ -1,0 +1,6 @@
+{
+  "title": "paiec sample manifest",
+  "id": "jaikaransingh12/paiec-sample-manifest",
+  "licenses": [{"name": "other"}],
+  "description": "Item ids (benchmark, item_id) sampled from measurement-db for embedding, plus the embedding script. No item text."
+}
