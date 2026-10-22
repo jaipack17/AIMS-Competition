@@ -1,0 +1,4 @@
+benchmark,items,unique_texts,tokens,seconds,dim
+afrieval,5000,5000,1033452,414.8,4096
+afrimedqa,5000,5000,1570434,457.8,4096
+agi_elo,5000,4991,710840,416.9,4096

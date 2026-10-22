@@ -1,0 +1,79 @@
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+train 10,382 items / 24 benchmarks, held-out 3,000 items / 6 benchmarks, dim 4096
+
+=== selection score: r2 ===
+[sklearn float64] alpha=1e+07  time 104.5 s   |  fast_ridge alpha=1e+07  time 48.8 s
+   same alpha: True   max rel diff coef 1.9e-14   intercept abs diff 0.0e+00   held-out pred rel diff 1.5e-15
+   CV score per alpha (sklearn | fast):
+         0.01  -20.0890187642 | -20.0890187647
+          0.1  -19.7071541925 | -19.7071541929
+            1  -16.9492639473 | -16.9492639475
+           10  -8.5690051456 | -8.5690051457
+          100  -1.9431477034 | -1.9431477034
+         1000  -0.6254179158 | -0.6254179158
+        10000  -0.2796539759 | -0.2796539759
+       100000  -0.0944429485 | -0.0944429485
+        1e+06  -0.0310779856 | -0.0310779856
+        1e+07  -0.0118175901 | -0.0118175901
+   max abs diff of CV scores 5.1e-10
+[sklearn float32] alpha=1e+07  time 51.4 s   |  fast_ridge alpha=1e+07  time 48.8 s
+   same alpha: True   max rel diff coef 1.9e-06   intercept abs diff 9.6e-09   held-out pred rel diff 2.1e-07
+
+=== selection score: mse ===
+[sklearn float64] alpha=1e+07  time 90.6 s   |  fast_ridge alpha=1e+07  time 39.4 s
+   same alpha: True   max rel diff coef 1.9e-14   intercept abs diff 0.0e+00   held-out pred rel diff 1.5e-15
+   CV score per alpha (sklearn | fast):
+         0.01  -62.3749220945 | -62.3749220956
+          0.1  -61.4420157683 | -61.4420157692
+            1  -54.5197038597 | -54.5197038602
+           10  -30.7044537904 | -30.7044537905
+          100  -10.3154463699 | -10.3154463699
+         1000  -5.8880862219 | -5.8880862219
+        10000  -5.1328202889 | -5.1328202889
+       100000  -4.8746793372 | -4.8746793372
+        1e+06  -4.7833939366 | -4.7833939366
+        1e+07  -4.7706695001 | -4.7706695001
+   max abs diff of CV scores 1.2e-09
+[sklearn float32] alpha=1e+07  time 51.5 s   |  fast_ridge alpha=1e+07  time 39.4 s
+   same alpha: True   max rel diff coef 1.9e-06   intercept abs diff 9.6e-09   held-out pred rel diff 2.1e-07
+
+RESULT: fast_ridge MATCHES sklearn RidgeCV (float64)

@@ -1,0 +1,6 @@
+{
+ "sigma_delta": 0.5866732824961401,
+ "sigma_zeta": 1.109951138496399,
+ "n_benchmarks_for_sigma_delta": 115,
+ "run": "versionB_4parts_logitnormal"
+}

@@ -1,0 +1,38 @@
+{
+ "run": "versionB_4parts_logitnormal",
+ "fit": "fold4",
+ "solver": "sklearn RidgeCV float32",
+ "score": "r2",
+ "alpha": 10000000.0,
+ "alphas": [
+  0.01,
+  0.1,
+  1.0,
+  10.0,
+  100.0,
+  1000.0,
+  10000.0,
+  100000.0,
+  1000000.0,
+  10000000.0,
+  100000000.0
+ ],
+ "best_score": 0.004660117626190186,
+ "n_train_items": 178566,
+ "vs_fast_ridge": {
+  "same_alpha": true,
+  "alpha_sklearn": 10000000.0,
+  "alpha_fast": 10000000.0,
+  "coef_max_rel_diff": 9.887874326109365e-06,
+  "intercept_abs_diff": 1.9819714906429975e-07,
+  "pred_max_abs_diff": 6.087234222795779e-07,
+  "pred_pearson": 0.9999999999998882
+ },
+ "minutes": 16.01,
+ "heldout_vs_final_b": {
+  "n_items": 76720,
+  "pearson_all": 0.05590998403956108,
+  "pearson_within_benchmark_mean": 0.09811129847443141,
+  "rmse": 1.3776757717132568
+ }
+}

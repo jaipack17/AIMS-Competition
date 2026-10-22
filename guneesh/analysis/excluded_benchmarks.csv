@@ -1,0 +1,91 @@
+benchmark,response_type,reason
+advprompter,binary,direction=lower_is_better
+agc_bench,mixed,direction=None
+agentdojo,mixed,direction=None
+alignment_faking,binary,direction=unordered
+annotating_errors_wcf,mixed,direction=None
+bedd_basalt,mixed,direction=None
+bigfinancebench,mixed,direction=None
+braveguard,binary,direction=unordered
+ceobench,mixed,direction=None
+chartmuseum,binary,all responses are null
+chatgpt_drift,mixed,direction=None
+chipbench,mixed,direction=None
+classroom_ai,ordinal,direction=unordered
+coffeebench,continuous_unbounded,no usable min/max
+complexbench,fraction,all responses are null
+crow,binary,direction=lower_is_better
+das_med_hallucination,ordinal,direction=unordered
+data_juicer2,continuous_unbounded,direction=lower_is_better
+dbpa,binary,direction=unordered
+decodingtrust,mixed,direction=None
+donotanswer,mixed,direction=None
+doris_mae,ordinal,direction=None
+dpai,mixed,direction=None
+dtap_bench,mixed,direction=None
+eduguardbench,mixed,direction=None
+edumath,mixed,direction=None
+embodied_agent_interface,continuous_bounded,all responses are null
+emoji_attack,binary,direction=lower_is_better
+engibench,continuous_unbounded,direction=lower_is_better
+fetv,mixed,direction=None
+fgbench,mixed,direction=None
+find_interp,mixed,direction=None
+genai_learning,mixed,direction=None
+goodai_ltm_benchmark,mixed,direction=None
+harmbench,binary,direction=lower_is_better
+helm_bold,fraction,direction=lower_is_better
+helm_cleva,mixed,direction=None
+helm_real_toxicity_prompts,fraction,direction=lower_is_better
+image2struct,mixed,direction=None
+indeterminacy,mixed,direction=None
+ineqmath,binary,all responses are null
+infibench,continuous_unbounded,no usable min/max
+intercode,mixed,direction=None
+jailbreakbench,binary,direction=lower_is_better
+jetts,mixed,direction=None
+katakomba,continuous_unbounded,no usable min/max
+lambda_fp_course,mixed,direction=None
+lawbench,mixed,direction=None
+lexeval,mixed,direction=None
+llm4ir,mixed,direction=None
+llmail_inject,binary,direction=lower_is_better
+llm_survey_simulation,mixed,direction=None
+lohi_drug_discovery,mixed,direction=None
+matharena,mixed,direction=None
+matharena_platform,mixed,direction=None
+medagentboard,mixed,direction=None
+mergebench,mixed,direction=None
+mlip_arena,mixed,direction=None
+mmdocrag,fraction,direction=None
+mmedbench,continuous,all responses are null
+mmmu_dev_val,binary,all responses are null
+mmoral_bench,mixed,direction=None
+moe_cap,mixed,direction=None
+morqa,continuous_bounded,direction=None
+multi_moe,mixed,direction=None
+nanobaselib,continuous_bounded,all responses are null
+naturalreasoning,binary,all responses are null
+oasst,ordinal,direction=lower_is_better
+ocrbench_v2,continuous,no usable min/max
+os_harm,binary,direction=None
+preference_dissection,nominal,direction=unordered
+prism,mixed,direction=None
+psychosis_bench,mixed,direction=None
+rclicks,mixed,direction=None
+real_pocqi,win_rate,pairwise win rate
+refgrader,ordinal,direction=None
+researchcodebench,binary,direction=None
+safeagentbench,binary,direction=unordered
+scale_mrt,mixed,direction=None
+sciarena,win_rate,pairwise win rate
+scigym,mixed,direction=None
+stanford_orb,mixed,direction=None
+svrpbench,mixed,direction=None
+tabarena,mixed,direction=None
+tensortrust,binary,direction=unordered
+vhelm,mixed,direction=None
+visit_bench,mixed,direction=None
+wmt_mqm,binary,direction=lower_is_better
+wonderbread,mixed,direction=None
+xstest,nominal,direction=unordered

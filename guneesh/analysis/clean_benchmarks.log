@@ -1,0 +1,250 @@
+                       benchmark      response_type  min   max  items_with_responses  subjects  responses  pairs_ge80_items  share_exact_0_or_1  mean_score01
+                 abstract_reason             binary  0.0   1.0                  9089         1       9095                 1            1.000000      0.467839
+                    adaptivestep             binary  0.0   1.0                  3638         2     931328                 2            1.000000      0.656464
+                           aegis             binary  0.0   1.0                 11500         1      11608                 1            1.000000      0.639904
+                        afrieval             binary  0.0   1.0                 35205       948    1403380               948            1.000000      0.777172
+                       afrimedqa             binary  0.0   1.0                 39494        32     281354                32            1.000000      0.675814
+     agentic_review_perturbation             binary  0.0   1.0                   105         3        315                 3            1.000000      0.095238
+                         agi_elo             binary  0.0   1.0                 13953        20     277106                20            1.000000      0.704449
+                       ai2d_test             binary  0.0   1.0                  3088       254     784094               254            1.000000      0.694621
+                           aider             binary  0.0   1.0                    26        17       5356                 0            1.000000      0.699589
+                        algotune             binary  0.0   1.0                   154        18       2772                18            1.000000      0.707431
+                       alpha_sql             binary  0.0   1.0                  1533         1       1533                 1            1.000000      0.694716
+                        appworld             binary  0.0   1.0                   585        18      10530                18            1.000000      0.252991
+         auditing_sabotage_bench             binary  0.0   1.0                    68        18       1869                 0            1.000000      0.579989
+                      averimatec             binary  0.0   1.0                   152         1        152                 1            1.000000      0.796053
+                        babilong             binary  0.0   1.0                526202        83    2020951                83            1.000000      0.488845
+                             bbq             binary  0.0   1.0                204093         7     380089                 7            1.000000      0.662608
+                     beavertails             binary  0.0   1.0                   420         4       1680                 4            1.000000      0.746429
+                          benger             binary  0.0   1.0                   760        41       9302                25            1.000000      0.798860
+                         bertaqa             binary  0.0   1.0                 51760         6      57072                 6            1.000000      0.740100
+                        bird_sql             binary  0.0   1.0                   360       120      43200               120            1.000000      0.088657
+                           brace             binary  0.0   1.0                 12631        28     202096                28            1.000000      0.850388
+                    bridging_gap             binary  0.0   1.0                132418       417    4706881               417            1.000000      0.517744
+                   causal_axioms             binary  0.0   1.0                  4500         2       9000                 2            1.000000      0.668556
+                       cellverse             binary  0.0   1.0                   748         1        748                 1            1.000000      0.423797
+                           ceval             binary  0.0   1.0                  1346        11      14806                11            1.000000      0.481967
+                       chi_bench             binary  0.0   1.0                   775        62       7667                 0            1.000000      0.142429
+                       clasheval             binary  0.0   1.0                 12495         6      75216                 6            1.000000      0.316050
+                           cmmlu             binary  0.0   1.0                 23160        22     254804                22            1.000000      0.709840
+                      confagents             binary  0.0   1.0                    16         4         64                 0            1.000000      0.562500
+         critic_discernment_game             binary  0.0   1.0                  1819         4       7276                 4            1.000000      0.686091
+                        cruxeval             binary  0.0   1.0                  4000        31     992000                31            1.000000      0.392220
+                            dave             binary  0.0   1.0                  3922         8      19248                 8            1.000000      0.360973
+                        devbench             binary  0.0   1.0                   271        19       5149                19            1.000000      0.568654
+                           disco             binary  0.0   1.0                 28000         4     111906                 4            1.000000      0.135221
+                       editbench             binary  0.0   1.0                   540        44      23328                44            1.000000      0.476209
+                  edu_circuit_hw             binary  0.0   1.0                   513         6       2886                 6            1.000000      0.359667
+                       egoschema             binary  0.0   1.0                  4500        11       5500                11            1.000000      0.562364
+                    ehrflowbench             binary  0.0   1.0                    20         7        140                 0            1.000000      0.621429
+                elicitation_game             binary  0.0   1.0                  2960        14      14070                13            1.000000      0.500426
+                       engdesign             binary  0.0   1.0                   101        16       5393                12            1.000000      0.188207
+                     enginemt_qa             binary  0.0   1.0                   676         1        676                 1            1.000000      0.776627
+                         erbench             binary  0.0   1.0                 32163         8     213110                 8            1.000000      0.471822
+                          evouna             binary  0.0   1.0                  5162         5      25359                 5            1.000000      0.769470
+                      exploitgym             binary  0.0   1.0                  1737         5       6357                 5            1.000000      0.151015
+                        faithcot             binary  0.0   1.0                   684         4       2519                 4            1.000000      0.680826
+                            felm             binary  0.0   1.0                  4412         1       4426                 1            1.000000      0.822187
+                 fewshot_ttt_bbh             binary  0.0   1.0                  1310        11       7425                11            1.000000      0.537912
+                    financebench             binary  0.0   1.0                   150        16       2400                16            1.000000      0.472917
+                   finegrain_t2i             binary  0.0   1.0                   750         5       3750                 5            1.000000      0.516000
+                           haiid             binary  0.0   1.0                   152      1126      71364                 0            1.000000      0.709559
+                  hallusionbench             binary  0.0   1.0                   951       253     239475               253            1.000000      0.565170
+                healthadminbench             binary  0.0   1.0                   540         7       7020                 7            1.000000      0.247578
+                        helm_afr             binary  0.0   1.0                 72223        22     745360                22            1.000000      0.529661
+                        helm_bbq             binary  0.0   1.0                  2000        81      81000                81            1.000000      0.882901
+                   helm_thaiexam             binary  0.0   1.0                   565        42      23730                42            1.000000      0.463127
+                             hle             binary  0.0   1.0                  2247        20      13777                12            1.000000      0.321841
+             icpc2_code_selector             binary  0.0   1.0                  2175        39      70905                39            1.000000      0.667654
+                         igakuqa             binary  0.0   1.0                  2942         5       7355                 5            1.000000      0.672060
+                      igakuqa119             binary  0.0   1.0                   400         1        400                 1            1.000000      0.785000
+                             ikp             binary  0.0   1.0                  1400       170     268351               170            1.000000      0.591714
+                   imagenet_hard             binary  0.0   1.0                  7496        13      97500                13            1.000000      0.162482
+interchangeable_token_embeddings             binary  0.0   1.0                199893         2     399731                 2            1.000000      0.937298
+                     judgetuning             binary  0.0   1.0                  3000         7      21000                 7            1.000000      0.451571
+                     kernelbench             binary  0.0   1.0                   250        19      73984                18            1.000000      0.175727
+                           kmmlu             binary  0.0   1.0                 35015        30    1007230                30            1.000000      0.537433
+                      kormedmcqa             binary  0.0   1.0                  3009         7      21391                 6            1.000000      0.851620
+                 legal_rag_bench             binary  0.0   1.0                   300         6       1800                 6            1.000000      0.788889
+                      legalbench             binary  0.0   1.0                  9393        31      63457                31            1.000000      0.525222
+                         lingoly             binary  0.0   1.0                 12463        11      24926                11            1.000000      0.164286
+                 live_agent_risk             binary  0.0   1.0                    73        31        256                 0            1.000000      0.285156
+                   liveaopsbench             binary  0.0   1.0                  5323        13      69264                13            1.000000      0.308400
+                      llm_bp_tag             binary  0.0   1.0                152139         1     158596                 1            1.000000      0.627153
+           llm_uncertainty_bench             binary  0.0   1.0                149793       102    5100000               102            1.000000      0.536693
+         llms_lean_formalization             binary  0.0   1.0                   588       120      64092               120            1.000000      0.347095
+                  mathconstraint             binary  0.0   1.0                   504        12      11862                12            1.000000      0.644074
+                  mathvista_mini             binary  0.0   1.0                  1000       263     268820               263            1.000000      0.514259
+                 medhelm_ehr_sql             binary  0.0   1.0                  1000        13      13000                13            1.000000      0.178538
+                 medhelm_head_qa             binary  0.0   1.0                  1000        13      13000                13            1.000000      0.881769
+                medhelm_med_mcqa             binary  0.0   1.0                  1000        13      13000                13            1.000000      0.761154
+                  medhelm_med_qa             binary  0.0   1.0                  1000        13      13000                13            1.000000      0.876000
+              medhelm_medbullets             binary  0.0   1.0                   298        13       4004                13            1.000000      0.702298
+           medhelm_medcalc_bench             binary  0.0   1.0                   992        13      13000                13            1.000000      0.247000
+                   medhelm_medec             binary  0.0   1.0                   597        13       7761                13            1.000000      0.582013
+                medhelm_medhallu             binary  0.0   1.0                  2000        13      13000                13            1.000000      0.875769
+               medhelm_pubmed_qa             binary  0.0   1.0                  1500        13      11000                13            1.000000      0.701091
+          medhelm_race_based_med             binary  0.0   1.0                   167        13       2171                13            1.000000      0.803316
+                        mind2web             binary  0.0   1.0                 17153         1      17153                 1            1.000000      0.896869
+                        mj_bench             binary  0.0   1.0                 15630        56     102859                55            1.000000      0.304407
+                     mmbench_v11             binary  0.0   1.0                 12175       251    3115891               251            1.000000      0.803625
+                            mmlu             binary  0.0   1.0                 14015       150    2106300               150            1.000000      0.401081
+                         mmlupro             binary  0.0   1.0                 14109        48     536290                48            1.000000      0.544293
+               monkey_power_laws             binary  0.0   1.0                   525        13   28780000                13            1.000000      0.156354
+                         morphkv             binary  0.0   1.0                   529         9       3674                 9            1.000000      0.410724
+                        mtbbench             binary  0.0   1.0                   573        25       8397                25            1.000000      0.614624
+                  multi_swebench             binary  0.0   1.0                  2127        82      57975                82            1.000000      0.147943
+                       mypcbench             binary  0.0   1.0                   118         6        118                 0            1.000000      0.779661
+               naep_llm_students             binary  0.0   1.0                   488        11      53680                11            1.000000      0.766449
+                     naturebench             binary  0.0   1.0                   181        23       2070                23            1.000000      0.334300
+                          nester             binary  0.0   1.0                   356         3       1128                 3            1.000000      0.924645
+                   nyu_ctf_bench             binary  0.0   1.0                   400        15       2979                15            1.000000      0.126217
+                  ood_prediction             binary  0.0   1.0                142805         2     142805                 2            1.000000      0.510395
+                       openbiorq             binary  0.0   1.0                   657        11       7213                11            1.000000      0.307084
+                   perfcodebench             binary  0.0   1.0                  1854        20      23854                20            1.000000      0.673765
+                       perumedqa             binary  0.0   1.0                  8259        11      85107                11            1.000000      0.542693
+                    pku_saferlhf             binary  0.0   1.0                 39994         3     164236                 3            1.000000      0.484187
+                       planbench             binary  0.0   1.0                 11076        42      38061                40            1.000000      0.235333
+                        proofaug             binary  0.0   1.0                   244         1        244                 1            1.000000      0.659836
+                            prox             binary  0.0   1.0                 12052         2      24298                 2            1.000000      0.187094
+                         pxplore             binary  0.0   1.0                   787        14       3966                14            1.000000      0.543873
+                           radar             binary  0.0   1.0                     1         1          1                 0            1.000000      0.000000
+                  real_webagents             binary  0.0   1.0                   233        33       4449                26            1.000000      0.357608
+                      realtimeqa             binary  0.0   1.0                  7877        94      63620                78            1.000000      0.240097
+                   reliancescope             binary  0.0   1.0                  1200        24       7200                24            1.000000      0.512500
+                         revolve             binary  0.0   1.0                   310         2       3100                 2            1.000000      0.342258
+                       risebench             binary  0.0   1.0                  1080        23       8271                23            1.000000      0.164309
+      robust_reasoning_benchmark             binary  0.0   1.0                  4895        31     146040                23            1.000000      0.420933
+                    scbench_long             binary  0.0   1.0                     4        29        346                 0            1.000000      0.167630
+                         sgrades             binary  0.0   1.0                 22909        73     673768                63            1.000000      0.605861
+                          sib200             binary  0.0   1.0                 41820      3341     681564              3341            1.000000      0.705758
+                     sketchjudge             binary  0.0   1.0                  4052        38      38562                38            1.000000      0.646051
+           software_world_models             binary  0.0   1.0                   434        18       7830                18            1.000000      0.571520
+                          statqa             binary  0.0   1.0                  1158        38      44194                38            1.000000      0.342739
+                   subjective_qa             binary  0.0   1.0                 10920         5      16164                 5            1.000000      0.543925
+                      sugarcrepe             binary  0.0   1.0                 15024         1      15024                 1            1.000000      0.921858
+                sustainable_food             binary  0.0   1.0                   500         6       2999                 6            1.000000      0.569857
+                     swe_rebench             binary  0.0   1.0                  6306         1      67074                 1            1.000000      0.479485
+                       swe_smith             binary  0.0   1.0                 15616         3      49897                 3            1.000000      0.431148
+                    swe_together             binary  0.0   1.0                   109        20       4341                20            1.000000      0.601705
+                   swebench_live             binary  0.0   1.0                  1517        61       8656                44            1.000000      0.488794
+                    swepolybench             binary  0.0   1.0                   547         7       1870                 6            1.000000      0.412834
+                      tau2_bench             binary  0.0   1.0                  2388        31      23210                29            1.000000      0.751142
+                        taubench             binary  0.0   1.0                   201        49       4314                 2            1.000000      0.503245
+                   truthfulqa_mc             binary  0.0   1.0                   817       150     122550               150            1.000000      0.285867
+                 tulu_human_eval             binary  0.0   1.0                  1028         4       2300                 4            1.000000      0.790435
+                           tumlu             binary  0.0   1.0                128016        30     137388                30            1.000000      0.582089
+                      txbench_pp             binary  0.0   1.0                    12        16        576                 0            1.000000      0.378472
+                   visual_memory             binary  0.0   1.0                 47500         5     237500                 5            1.000000      0.447069
+                  visual_riddles             binary  0.0   1.0                   793         8       3186                 8            1.000000      0.272442
+                  visualwebarena             binary  0.0   1.0                   200         5        600                 3            1.000000      0.261667
+                  vl_rewardbench             binary  0.0   1.0                  1532        16     105697                16            1.000000      0.448480
+                      weavebench             binary  0.0   1.0                   114         7        114                 0            1.000000      0.552632
+                   wikihow_agent             binary  0.0   1.0                 14287        12     171412                12            1.000000      0.964489
+                       workarena             binary  0.0   1.0                   385         8        475                 4            1.000000      0.227368
+             workbench_revisited             binary  0.0   1.0                   690        24      16560                24            1.000000      0.738587
+               worldcentralbanks             binary  0.0   1.0                119925        10     405558                10            1.000000      0.636422
+                  atmossci_bench         continuous  0.0   1.0                  2310        54      36929                54            0.984050      0.522224
+               autoresearchbench         continuous  0.0   1.0                    60         1        115                 0            1.000000      0.000000
+                 decompile_bench         continuous  0.0   1.0                 72059         2     141131                 2            0.000000      0.204029
+                        hivmedqa         continuous  0.0   5.0                  2425        13      52153                13            0.563400      0.835885
+                         imgedit         continuous  1.0   5.0                   454         1        454                 1            0.262115      0.570303
+                       livebench         continuous  0.0   1.0                  1286       200     165334               173            0.828898      0.348304
+                           nis3d         continuous  0.0   1.0                    30         6        180                 0            0.005556      0.425194
+                        phyblock         continuous  0.0   1.0                  1362        21       9524                21            0.231415      0.362956
+                           qatch         continuous  0.0   1.0                 36458         6      61381                 6            0.789935      0.619403
+                          rakuda         continuous  0.0  10.0                   247       647      57528               419            0.181112      0.780618
+               researchclawbench         continuous  0.0 100.0                    40        37       1432                 0            0.032821      0.202082
+                        threeeed         continuous  0.0   1.0                  8616         4      17232                 4            0.224698      0.312976
+                      alpacaeval continuous_bounded  0.0   1.0                   805       221     177886               221            0.000208      0.223687
+                          arcagi continuous_bounded  0.0   1.0                   526        80      35236                75            0.984419      0.531147
+                    care_enzymes continuous_bounded  0.0   1.0                  4136        22      16817                21            0.981269      0.237257
+                   helm_airbench continuous_bounded  0.0   1.0                  7723        66     375804                66            0.933694      0.613631
+          helm_anthropic_redteam continuous_bounded  0.0   1.0                   995        81      81000                81            0.957247      0.973625
+                  helm_harmbench continuous_bounded  0.0   1.0                   403        81      32400                81            0.805617      0.739182
+        helm_simple_safety_tests continuous_bounded  0.0   1.0                   100        81       8100                81            0.975432      0.959167
+                     helm_xstest continuous_bounded  0.0   1.0                   450        81      36450                81            0.938738      0.940988
+                           mochi continuous_bounded -0.5   1.0                  3717        24      48456                24            0.135257      0.501789
+                         mtbench continuous_bounded  1.0  10.0                  2712        34       5436                34            0.411516      0.527900
+              multimodal_stem_ai continuous_bounded  0.0   1.0                   249        17       4335                17            0.890196      0.547991
+                    programbench continuous_bounded  0.0   1.0                  1316        28       4964                25            0.039686      0.531887
+                 proteininvbench continuous_bounded  0.0   1.0                  7410        16      23872                16            0.000000      0.411869
+                   reasoning_gym continuous_bounded  0.0   1.0                 56178        14     186105                14            0.849160      0.505019
+                       corebench           fraction  0.0   1.0                   270        11       1956                 4            0.928425      0.355381
+                           csedb           fraction  0.0   1.0                  2069         7      41911                 6            0.772971      0.590048
+                   dataclawbench           fraction  0.0   1.0                   492         8       3936                 8            0.960874      0.381612
+                 theagentcompany           fraction  0.0   1.0                   175        19       3056                17            0.611911      0.323488
+                        mlrbench          likert_10  1.0  10.0                  5226         6      31356                 6            0.022165      0.777062
+                          biggen           likert_5  1.0   5.0                  4589       103     979501               103            0.297299      0.550075
+                     ghosts_math           likert_5  1.0   5.0                   478         3       1066                 3            0.374296      0.650797
+                      kris_bench           likert_5  1.0   5.0                  8941        20     130159                20            0.664941      0.538451
+                medwatermark_fws           likert_5  1.0   5.0                  1782        23      14400                23            0.309236      0.352587
+                        summeval           likert_5  1.0   5.0                   800        16      51200                16            0.385352      0.735010
+                   ultrafeedback           likert_5  1.0   5.0                254495       743    1009730               721            0.498795      0.680515
+                      cseo_bench            ordinal -5.0   5.0                242264         4     259127                 4            0.013877      0.512361
+                           dqvis            ordinal  0.0   2.0                   356         1        357                 1            0.834734      0.841737
+                      frontieror            ordinal  0.0   1.0                   180        15       2230                12            0.837668      0.364753
+                         prm800k            ordinal -1.0   1.0                458938         1    1046365                 1            0.898674      0.698807
+                    putnam_axiom            ordinal  0.0   1.0                  2500         2       5000                 2            0.756200      0.399900
+                     rewardbench            ordinal  0.0   1.0                  4045       167     491343               167            0.991546      0.702792
+                        synthpai            ordinal  0.0   1.0                  8776        18      11920                18            0.941275      0.666359
+                           tengu            ordinal  0.0  10.0                   840       647     192440               647            0.448285      0.671657
+                      wildvision            ordinal  0.0   1.0                   500        22      10974                22            0.428012      0.408488
+
+CLEAN by type:
+                     benchmarks    items  responses
+response_type                                     
+binary                     145  2609859   60327276
+continuous                  12   125347     543393
+continuous_bounded          14    86720    1036861
+fraction                     4     3006      50859
+likert_10                    1     5226      31356
+likert_5                     6   271085    2186056
+ordinal                      9   718399    2019756
+
+TOTAL clean: 191 benchmarks, 3,819,642 items, 66,195,557 responses; with >=1 test-eligible pair (>=80 items): 176
+
+EXCLUDED by reason:
+ reason
+direction=None               55
+direction=lower_is_better    12
+direction=unordered           9
+all responses are null        8
+no usable min/max             4
+pairwise win rate             2
+                 benchmark        response_type                    reason
+               advprompter               binary direction=lower_is_better
+          alignment_faking               binary       direction=unordered
+                braveguard               binary       direction=unordered
+               chartmuseum               binary    all responses are null
+              classroom_ai              ordinal       direction=unordered
+               coffeebench continuous_unbounded         no usable min/max
+              complexbench             fraction    all responses are null
+                      crow               binary direction=lower_is_better
+     das_med_hallucination              ordinal       direction=unordered
+              data_juicer2 continuous_unbounded direction=lower_is_better
+                      dbpa               binary       direction=unordered
+  embodied_agent_interface   continuous_bounded    all responses are null
+              emoji_attack               binary direction=lower_is_better
+                 engibench continuous_unbounded direction=lower_is_better
+                 harmbench               binary direction=lower_is_better
+                 helm_bold             fraction direction=lower_is_better
+helm_real_toxicity_prompts             fraction direction=lower_is_better
+                  ineqmath               binary    all responses are null
+                 infibench continuous_unbounded         no usable min/max
+            jailbreakbench               binary direction=lower_is_better
+                 katakomba continuous_unbounded         no usable min/max
+             llmail_inject               binary direction=lower_is_better
+                 mmedbench           continuous    all responses are null
+              mmmu_dev_val               binary    all responses are null
+               nanobaselib   continuous_bounded    all responses are null
+          naturalreasoning               binary    all responses are null
+                     oasst              ordinal direction=lower_is_better
+               ocrbench_v2           continuous         no usable min/max
+     preference_dissection              nominal       direction=unordered
+                real_pocqi             win_rate         pairwise win rate
+            safeagentbench               binary       direction=unordered
+                  sciarena             win_rate         pairwise win rate
+               tensortrust               binary       direction=unordered
+                   wmt_mqm               binary direction=lower_is_better
+                    xstest              nominal       direction=unordered

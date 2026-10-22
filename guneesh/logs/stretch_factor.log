@@ -1,0 +1,11 @@
+fold0: ridge at alpha=1e+07 predicted 58,941 held-out items
+fold1: ridge at alpha=1e+07 predicted 45,490 held-out items
+fold2: ridge at alpha=1e+07 predicted 26,800 held-out items
+fold3: ridge at alpha=1e+07 predicted 47,335 held-out items
+fold4: ridge at alpha=1e+07 predicted 76,720 held-out items
+fold0: k from other folds 3.99; within-benchmark MSE on this fold 2.8973 (k=1) -> 2.8748 (stretched)
+fold1: k from other folds 3.90; within-benchmark MSE on this fold 2.5473 (k=1) -> 2.5154 (stretched)
+fold2: k from other folds 3.96; within-benchmark MSE on this fold 3.7709 (k=1) -> 3.7384 (stretched)
+fold3: k from other folds 3.64; within-benchmark MSE on this fold 3.0661 (k=1) -> 3.0152 (stretched)
+fold4: k from other folds 5.05; within-benchmark MSE on this fold 1.8819 (k=1) -> 1.8945 (stretched)
+k = 4.050 (pooled over 255,286 held-out items); between-benchmark slope 0.689; center c = 0.0146

@@ -1,0 +1,11 @@
+{
+ "a": -0.1538206004288039,
+ "b": 0.21716482856539043,
+ "years_min": -1.0,
+ "years_max": 2.0,
+ "n_names": 595,
+ "loo_rmse_zero": 0.5161333084106445,
+ "loo_rmse_line": 0.4850361890085786,
+ "run": "versionB_4parts_logitnormal",
+ "fold": "final"
+}

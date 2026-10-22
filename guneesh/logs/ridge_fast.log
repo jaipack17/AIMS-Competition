@@ -1,0 +1,24 @@
+embeddings (255286, 4096) from 115 benchmarks (23 s)
+[fold0] best alpha on the top edge -> grid extended to 1e+08
+[versionB_4parts_logitnormal fold0] alpha=1e+07 cv r2=0.0043 train=196,345 held-out r=0.076 within-bench r=0.111 rmse=1.708
+[versionB_4parts_soft fold0] alpha=1e+07 cv r2=0.0041 train=196,345 held-out r=0.076 within-bench r=0.113 rmse=1.652
+[fold0] saved in 3.1 min
+[fold1] best alpha on the top edge -> grid extended to 1e+08
+[versionB_4parts_logitnormal fold1] alpha=1e+07 cv r2=0.0050 train=209,796 held-out r=0.101 within-bench r=0.173 rmse=1.605
+[versionB_4parts_soft fold1] alpha=1e+07 cv r2=0.0049 train=209,796 held-out r=0.101 within-bench r=0.167 rmse=1.539
+[fold1] saved in 4.1 min
+[versionB_4parts_logitnormal fold2] alpha=1e+06 cv r2=0.0067 train=228,486 held-out r=0.080 within-bench r=0.115 rmse=1.946
+[versionB_4parts_soft fold2] alpha=1e+06 cv r2=0.0060 train=228,486 held-out r=0.083 within-bench r=0.114 rmse=1.876
+[fold2] saved in 2.8 min
+[versionB_4parts_logitnormal fold3] alpha=1e+06 cv r2=0.0071 train=207,951 held-out r=0.141 within-bench r=0.163 rmse=1.766
+[versionB_4parts_soft fold3] alpha=1e+06 cv r2=0.0066 train=207,951 held-out r=0.136 within-bench r=0.163 rmse=1.710
+[fold3] saved in 2.6 min
+[fold4] best alpha on the top edge -> grid extended to 1e+08
+[versionB_4parts_logitnormal fold4] alpha=1e+07 cv r2=0.0047 train=178,566 held-out r=0.056 within-bench r=0.098 rmse=1.378
+[versionB_4parts_soft fold4] alpha=1e+07 cv r2=0.0048 train=178,566 held-out r=0.056 within-bench r=0.098 rmse=1.308
+[fold4] saved in 3.9 min
+[final] best alpha on the top edge -> grid extended to 1e+08
+[versionB_4parts_logitnormal final] alpha=1e+07 cv r2=0.0052 train=255,286 
+[versionB_4parts_soft final] alpha=1e+07 cv r2=0.0052 train=255,286 
+[final] saved in 3.7 min
+ALL DONE

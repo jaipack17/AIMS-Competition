@@ -1,0 +1,2 @@
+# logs of the long runs are kept on purpose (the repository root ignores *.log)
+!*.log

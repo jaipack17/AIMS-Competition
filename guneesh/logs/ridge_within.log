@@ -1,0 +1,20 @@
+embeddings (255286, 4096) from 115 benchmarks (27 s)
+[versionB_4parts_logitnormal fold0] alpha=100000 cv r2_within=0.0222 train=196,345 held-out r=0.131 within-bench r=0.143 rmse=1.720
+[versionB_4parts_soft fold0] alpha=100000 cv r2_within=0.0220 train=196,345 held-out r=0.129 within-bench r=0.145 rmse=1.664
+[fold0] saved in 2.4 min
+[versionB_4parts_logitnormal fold1] alpha=100000 cv r2_within=0.0242 train=209,796 held-out r=0.119 within-bench r=0.207 rmse=1.642
+[versionB_4parts_soft fold1] alpha=100000 cv r2_within=0.0239 train=209,796 held-out r=0.118 within-bench r=0.205 rmse=1.575
+[fold1] saved in 2.4 min
+[versionB_4parts_logitnormal fold2] alpha=100000 cv r2_within=0.0304 train=228,486 held-out r=0.073 within-bench r=0.130 rmse=1.964
+[versionB_4parts_soft fold2] alpha=100000 cv r2_within=0.0297 train=228,486 held-out r=0.078 within-bench r=0.130 rmse=1.891
+[fold2] saved in 3.3 min
+[versionB_4parts_logitnormal fold3] alpha=1e+06 cv r2_within=0.0179 train=207,951 held-out r=0.141 within-bench r=0.163 rmse=1.766
+[versionB_4parts_soft fold3] alpha=1e+06 cv r2_within=0.0181 train=207,951 held-out r=0.136 within-bench r=0.163 rmse=1.710
+[fold3] saved in 3.0 min
+[versionB_4parts_logitnormal fold4] alpha=100000 cv r2_within=0.0322 train=178,566 held-out r=0.088 within-bench r=0.098 rmse=1.492
+[versionB_4parts_soft fold4] alpha=100000 cv r2_within=0.0320 train=178,566 held-out r=0.086 within-bench r=0.098 rmse=1.420
+[fold4] saved in 2.8 min
+[versionB_4parts_logitnormal final] alpha=100000 cv r2_within=0.0318 train=255,286 
+[versionB_4parts_soft final] alpha=100000 cv r2_within=0.0318 train=255,286 
+[final] saved in 4.7 min
+ALL DONE

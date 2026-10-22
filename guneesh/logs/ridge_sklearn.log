@@ -1,0 +1,28 @@
+embeddings (255286, 4096) (25 s)
+C:\Users\Guneesh Gupta\AppData\Local\Programs\Python\Python312\Lib\site-packages\numpy\lib\_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+C:\Users\Guneesh Gupta\AppData\Local\Programs\Python\Python312\Lib\site-packages\numpy\lib\_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+[versionB_4parts_logitnormal fold0] sklearn alpha=1e+07 (fast 1e+07) coef rel diff 6.7e-06 pred max diff 7.9e-07 r=1.00000000  12.3 min
+C:\Users\Guneesh Gupta\AppData\Local\Programs\Python\Python312\Lib\site-packages\numpy\lib\_function_base_impl.py:3023: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[:, None]
+C:\Users\Guneesh Gupta\AppData\Local\Programs\Python\Python312\Lib\site-packages\numpy\lib\_function_base_impl.py:3024: RuntimeWarning: invalid value encountered in divide
+  c /= stddev[None, :]
+[versionB_4parts_soft fold0] sklearn alpha=1e+07 (fast 1e+07) coef rel diff 6.0e-06 pred max diff 7.6e-07 r=1.00000000  10.92 min
+[fold0] saved in 23.6 min
+[versionB_4parts_logitnormal fold1] sklearn alpha=1e+07 (fast 1e+07) coef rel diff 1.1e-05 pred max diff 8.7e-07 r=1.00000000  10.68 min
+[versionB_4parts_soft fold1] sklearn alpha=1e+07 (fast 1e+07) coef rel diff 7.0e-06 pred max diff 5.5e-07 r=1.00000000  10.97 min
+[fold1] saved in 21.9 min
+[versionB_4parts_logitnormal fold2] sklearn alpha=1e+06 (fast 1e+06) coef rel diff 1.6e-05 pred max diff 2.9e-06 r=1.00000000  10.75 min
+[versionB_4parts_soft fold2] sklearn alpha=1e+06 (fast 1e+06) coef rel diff 1.3e-05 pred max diff 2.8e-06 r=1.00000000  10.69 min
+[fold2] saved in 21.7 min
+[versionB_4parts_logitnormal fold3] sklearn alpha=1e+06 (fast 1e+06) coef rel diff 1.3e-05 pred max diff 4.0e-06 r=1.00000000  9.71 min
+[versionB_4parts_soft fold3] sklearn alpha=1e+06 (fast 1e+06) coef rel diff 1.9e-05 pred max diff 3.7e-06 r=1.00000000  9.72 min
+[fold3] saved in 19.6 min
+[versionB_4parts_logitnormal fold4] sklearn alpha=1e+07 (fast 1e+07) coef rel diff 9.9e-06 pred max diff 6.1e-07 r=1.00000000  16.01 min
+[versionB_4parts_soft fold4] sklearn alpha=1e+07 (fast 1e+07) coef rel diff 8.8e-06 pred max diff 8.5e-07 r=1.00000000  16.84 min
+[fold4] saved in 33.0 min
+[versionB_4parts_logitnormal final] sklearn alpha=1e+07 (fast 1e+07) coef rel diff 7.4e-06 pred max diff 5.0e-07 r=1.00000000  16.69 min
+[versionB_4parts_soft final] sklearn alpha=1e+07 (fast 1e+07) coef rel diff 1.1e-05 pred max diff 6.8e-07 r=1.00000000  13.95 min
+[final] saved in 31.0 min
+ALL DONE

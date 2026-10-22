@@ -1,0 +1,29 @@
+{
+ "sigma_theta_name": 0.41269710659980774,
+ "sigma_theta_harness": 0.6960113048553467,
+ "sigma_theta_provider": 0.510730504989624,
+ "sigma_theta_effort": 0.5429520010948181,
+ "sigma_zeta": 1.1538029909133911,
+ "sigma_b": 1.613182544708252,
+ "config": {
+  "irt_dir": "data/irt",
+  "run": "versionB_4parts_soft",
+  "fold": "2",
+  "parts": [
+   "name",
+   "harness",
+   "provider",
+   "effort"
+  ],
+  "cont": "soft",
+  "epochs": 2000,
+  "lr": 0.01,
+  "seed": 0,
+  "threads": 0
+ },
+ "minutes": 21.12381048599879,
+ "n_binary_cells": 23393147,
+ "n_binary_responses": 55567670,
+ "n_cont_cells": 3553143,
+ "n_cont_responses": 4397434
+}
