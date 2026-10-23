@@ -48,6 +48,7 @@ It is written so that another person, or another Claude session, can take over t
 | Biggest open decision | The organizers confirmed that **calling LLM APIs during scoring is allowed** (Anthropic, OpenAI, Google, xAI, DeepSeek, Mistral, Together AI, Groq; no web search or browsing). It is not yet clear how API keys are supplied at scoring time or who pays. See section 12.2. |
 | Where is the long technical report? | `report.md` in this folder (about 6,300 words). This README contains everything in it and more. |
 | Which file must never be read or used? | `SUBMISSION_1.md` in Guneesh's local project. Guneesh asked that it not be used until Guneesh says so. It is **not** in this repository. |
+| Where are the embeddings and IRT data? | On Hugging Face (public, 2.56 GB): https://huggingface.co/datasets/GunGG4/paiec-Qwen8Binstruct-guneesh-data . From inside `guneesh/` run `hf download GunGG4/paiec-Qwen8Binstruct-guneesh-data --repo-type dataset --local-dir data` (see section 10). |
 | Secrets | No tokens or keys are in this repository. Never commit a Hugging Face token or API key. Two Modal logs were left out because they contain an account e-mail. |
 
 ---
@@ -609,15 +610,28 @@ Modal: the volumes `paiec-hf-cache` (the Qwen model cache) and `paiec-emb` (embe
 
 ## 10. What is not in this repository
 
-GitHub cannot hold the large files. Everything missing can be rebuilt with section 9.
+GitHub cannot hold the large files. **The most important ones are on Hugging Face** (public dataset, 2.56 GB, 174 files, CC-BY-SA-4.0):
+
+https://huggingface.co/datasets/GunGG4/paiec-Qwen8Binstruct-guneesh-data
+
+It holds `emb/qwen3vl8b/` (all embeddings), `irt/cells_binary.parquet`, `irt/cells_cont.parquet`, `irt/subjects.parquet`, `irt/folds.csv` and all 6 fits in `irt/versionB_4parts_logitnormal/` (including every `items.parquet`). Download it from inside `guneesh/`, so the files land where the scripts expect them:
+
+```
+pip install -U huggingface_hub
+hf download GunGG4/paiec-Qwen8Binstruct-guneesh-data --repo-type dataset --local-dir data
+```
+
+With this download, the simulation, `build_submission.py` and the ridge training all run without redoing the IRT fits or the GPU embeddings. Only the raw dataset (`data/measurement-db/`, public) and the embedding manifest are still missing; rebuild them with section 9 if needed.
+
+The table below lists what is not in the GitHub repository:
 
 | Missing | Size | Needed for | Rebuild with |
 |---|---|---|---|
 | `data/measurement-db/` (raw dataset) | 3.8 GB | everything upstream | `analysis/fetch_*.py` |
-| `data/emb/qwen3vl8b/` (embeddings) | 1.9 GB | ridge training | step 3 (GPU) |
+| `data/emb/qwen3vl8b/` (embeddings) | 1.9 GB | ridge training | **on Hugging Face**, or step 3 (GPU) |
 | `data/embed_manifest/binary_cap5000.parquet` | 0.5 GB | embeddings | `build_embed_manifest.py` |
-| `data/irt/cells_binary.parquet`, `cells_cont.parquet` | 0.3 GB | IRT fits, **the simulation** | `irt_build_data.py` |
-| `data/irt/<run>/<fit>/items.parquet` (item b) | 60 MB each | `build_submission.py` (shift priors), ridge training | `irt_fit.py` |
+| `data/irt/cells_binary.parquet`, `cells_cont.parquet` | 0.3 GB | IRT fits, **the simulation** | **on Hugging Face**, or `irt_build_data.py` |
+| `data/irt/<run>/<fit>/items.parquet` (item b) | 60 MB each | `build_submission.py` (shift priors), ridge training | **on Hugging Face**, or `irt_fit.py` |
 | `data/irt/versionB_4parts_soft/` details, `data/ridge_sklearn/`, soft ridges | | not needed | |
 | Two Modal logs (`download_8b.log`, `modal_full_8b.log`) | | not needed | contain an account e-mail |
 | `SUBMISSION_1.md` | | not to be used | |
@@ -626,7 +640,7 @@ GitHub cannot hold the large files. Everything missing can be rebuilt with secti
 
 **What is included in `data/`:** `irt/folds.csv`, `irt/subjects.parquet`, every fit's `theta_*.parquet`, `zeta.parquet`, `hyper.json`, `losses.csv`, `name_date_prior.json`; every ridge fit's `model.npz`, `pred.parquet`, `summary.json` (original and stretch 1); `ridge/.../stretch.json`; summaries of the soft and sklearn ridges; `submission_check_items*.parquet`; `irt_build.log`; `emb/qwen3vl8b/_progress.csv`.
 
-So, to run the **simulation** you only need to rebuild `cells_binary.parquet` (steps 1 and the first command of step 2), and to run **build_submission.py** you also need `final/items.parquet` (step 2, final fit only: `--fold final`). Note that refitting the IRT with the same seed should give the same values, but SVI on another machine may differ slightly. The built zips in `submissions/` are the reference.
+Without the Hugging Face download: to run the **simulation** you only need to rebuild `cells_binary.parquet` (steps 1 and the first command of step 2), and to run **build_submission.py** you also need `final/items.parquet` (step 2, final fit only: `--fold final`). Note that refitting the IRT with the same seed should give the same values, but SVI on another machine may differ slightly. The built zips in `submissions/` are the reference.
 
 ---
 
