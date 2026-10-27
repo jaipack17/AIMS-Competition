@@ -1,6 +1,7 @@
 """PAIEC submission "label update": AP two-stage IRT plus shifts estimated from the revealed labels.
 
     P(correct) = sigmoid( (theta(subject) + zeta) - (b_hat(item) + delta + epsilon) )
+    (theta - b_hat is core.base_logit: with mirt.json bundled it is the MIRT logit instead)
 
 theta, b_hat   as in submission "AP pure" (core.py).
 delta          shift of this benchmark's difficulty, shared by all its subjects: corrects the ridge's guess of
@@ -110,7 +111,7 @@ def _benchmark_fit(benchmark_id: str, labeled: list) -> dict:
     if items:
         prec[1 + len(subjects):] = 1 / SIGMA_ITEM ** 2
     if rows:
-        base = np.array([core.subject_theta(s) - core.item_b_hat(it) for s, it, _ in rows])
+        base = np.array([core.base_logit(s, it) for s, it, _ in rows])
         y = np.array([lab for _, _, lab in rows], dtype=float)
         A = np.zeros((len(rows), len(prec)))
         A[:, 0] = -1.0                                    # delta
@@ -135,7 +136,7 @@ def predict(input: list, labeled: list | None = None) -> float:
         a[s_i] = 1.0
     if j_i is not None:
         a[j_i] = -1.0
-    mean = core.subject_theta(subject) - core.item_b_hat(item) + float(a @ fit["w"])
+    mean = core.base_logit(subject, item) + float(a @ fit["w"])
     if not AVERAGE:
         return core.sigmoid(mean)
     var = float(a @ fit["cov"] @ a)

@@ -91,7 +91,12 @@ def fold_data(fold: int, ridge_dir: str, stretch: dict | None) -> dict:
     pred = pred[pred.heldout]
     b = pred.b_pred.to_numpy(dtype=float)
     if stretch is not None:  # b = c + k (b - c) around this fold's training mean (its ridge intercept)
-        c = float(np.load(os.path.join(ridge_dir, RUN, f"fold{fold}", "model.npz"))["intercept"])
+        ridge_npz = os.path.join(ridge_dir, RUN, f"fold{fold}", "model.npz")
+        if os.path.exists(ridge_npz):
+            c = float(np.load(ridge_npz)["intercept"])
+        else:  # MLP folds: the same mean, written by pipeline/stretch_factor_mlp.py
+            with open(os.path.join(ridge_dir, RUN, f"fold{fold}", "center.json")) as f:
+                c = float(json.load(f)["center"])
         b = c + stretch["k"] * (b - c)
     cells = pq.read_table(os.path.join("data", "irt", "cells_binary.parquet"), columns=["pair", "item", "n", "k"],
                           filters=[("benchmark", "in", benches)]).to_pandas()
@@ -104,6 +109,28 @@ def fold_data(fold: int, ridge_dir: str, stretch: dict | None) -> dict:
         pairs[pair] = {"benchmark": s.benchmark, "subject": {f: str(s[f]) for f in FIELDS},
                        "items": g.item.to_numpy(), "n": g.n.to_numpy(dtype=float), "k": g.k.to_numpy(dtype=float)}
     return {"theta": theta, "name_prior": name_prior, "bhat": dict(zip(pred["item"], b)), "pairs": pairs}
+
+
+def fold_mirt(fold: int, run: str, ridge_dir: str) -> tuple[dict, dict, dict]:
+    """Fold f's MIRT fit (pipeline/mirt_fit.py) and MIRT ridge (pipeline/mirt_ridge.py), neither trained on fold f's
+    benchmarks: scalar theta tables (nested; empty for m2pl), the core.MIRT dict of subject K-vectors, and the
+    held-out item parameter predictions [b, w1..wK] per item."""
+    fdir = os.path.join("data", "irt", run, f"fold{fold}")
+    hyper = json.load(open(os.path.join(fdir, "hyper.json")))
+    form, K = hyper["form"], int(hyper["K"])
+    vec = "u" if form == "nested" else "theta"
+    theta, subj = {}, {}
+    for p in PARTS:
+        t = pd.read_parquet(os.path.join(fdir, f"theta_{p}.parquet"))
+        t = t[~t.key.astype(str).str.startswith("private::")]
+        theta[p] = dict(zip(t.key, t.theta.astype(float))) if form == "nested" else {}
+        cols = [f"{vec}{k + 1}" for k in range(K)]
+        subj[p] = {key: row.tolist() for key, row in zip(t.key, t[cols].to_numpy(float))} if len(t) else {}
+    pred = pd.read_parquet(os.path.join(ridge_dir, run, f"fold{fold}", "pred.parquet"))
+    pred = pred[pred.heldout]
+    w = "v" if form == "nested" else "a"
+    P = pred[["b_pred"] + [f"{w}{k + 1}_pred" for k in range(K)]].to_numpy(float)
+    return theta, {"form": form, "K": K, "subject": subj}, dict(zip(pred["item"], P))
 
 
 def draw(data: dict, rng: np.random.Generator, n_bench: int, bench_items: int) -> list[dict]:
@@ -191,6 +218,11 @@ def main() -> None:
                     help="multiply the bundled sigma_item (item-shift prior and averaging) by this factor")
     ap.add_argument("--sigma_zeta_scale", type=float, default=1.0, help="multiply the bundled sigma_zeta")
     ap.add_argument("--sigma_delta_scale", type=float, default=1.0, help="multiply the bundled sigma_delta")
+    ap.add_argument("--mirt_run", default="", help="score a MIRT fit instead of the 1D one, e.g. mirt_nested_K2 "
+                    "(its fold fits in data/irt/<run>/ and ridges in --mirt_ridge_dir/<run>/)")
+    ap.add_argument("--mirt_ridge_dir", default="data/ridge_mirt")
+    ap.add_argument("--ridge_dir", default="", help="use b_hat from this folder (e.g. data/mlp_b) instead of the "
+                    "submission's own ridge_dir; sigmas are still the bundled ones times the --sigma_*_scale options")
     args = ap.parse_args()
 
     configs = {k: CONFIGS[k] for k in args.configs.split(",")} if args.configs else CONFIGS
@@ -200,6 +232,7 @@ def main() -> None:
     model.SIGMA_DELTA *= args.sigma_delta_scale
     with open(os.path.join(d, "shift_priors.json")) as f:
         ridge_dir = json.load(f).get("ridge_dir", "data/ridge")
+    ridge_dir = args.ridge_dir or ridge_dir
     stretch = None
     if os.path.exists(os.path.join(d, "bhat_stretch.json")):
         with open(os.path.join(d, "bhat_stretch.json")) as f:
@@ -209,6 +242,10 @@ def main() -> None:
         data = fold_data(fold, ridge_dir, stretch)
         core.THETA = data["theta"]
         core.item_b_hat = lambda item, _b=data["bhat"]: _b[item["item_content"]]
+        if args.mirt_run:   # MIRT logit (core.base_logit); same items, pairs and draws as the 1D runs
+            core.THETA, core.MIRT, params = fold_mirt(fold, args.mirt_run, args.mirt_ridge_dir)
+            core.item_params = lambda item, _p=params: _p[item["item_content"]]
+            core.item_b_hat = lambda item, _p=params: float(_p[item["item_content"]][0])
         rng = np.random.default_rng([args.seed, fold])
         for r in range(args.draws):
             pairs = draw(data, rng, args.n_bench, args.bench_items)
@@ -220,7 +257,7 @@ def main() -> None:
             print(f"fold {fold} draw {r}: {len(pairs)} pairs on {len({p['benchmark'] for p in pairs})} benchmarks "
                   f"({time.time() - t0:.0f}s)", flush=True)
     R = pd.DataFrame(rows)
-    out = os.path.join("analysis", f"simulate_alc_{args.sub}{args.tag}.csv")
+    out = os.path.join("analysis", f"simulate_alc_{args.sub}{'_' + args.mirt_run if args.mirt_run else ''}{args.tag}.csv")
     R.to_csv(out, index=False)
 
     # each draw is one "submission": mean over its pairs; compare configurations draw by draw

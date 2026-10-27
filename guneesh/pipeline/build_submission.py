@@ -5,6 +5,7 @@ Parameters written next to model.py:
   theta.json  {part: {key: theta}} for name / harness / provider / effort from the IRT fit
               (private "private::" names of blank-name training subjects are left out: they never match a test subject)
   ridge.npz   mean, scale, coef, intercept of the embedding -> difficulty ridge (fast_ridge, float64), from --ridge_dir
+              or, when --ridge_dir holds an MLP (data/mlp_b: final/mlp.npz, no model.npz), mlp.npz in its place
   bhat_stretch.json  (only with --stretch) center c and factor k of b = c + k (b_hat - c)
   name_date_prior.json  (only with --name_prior) a, b of theta_name = a + b * years for names unseen in training
   shift_priors.json  sigma_zeta (IRT fit) and sigma_delta = RMS over the 115 held-out benchmarks of the 5 folds of
@@ -86,9 +87,16 @@ def main() -> None:
     with open(os.path.join(out, "theta.json"), "w", encoding="utf-8") as f:
         json.dump(theta, f, ensure_ascii=False)
 
-    m = np.load(os.path.join(args.ridge_dir, args.run, "final", "model.npz"))
-    np.savez(os.path.join(out, "ridge.npz"), mean=m["mean"], scale=m["scale"], coef=m["coef"],
-             intercept=m["intercept"], alpha=m["alpha"])
+    final_dir = os.path.join(args.ridge_dir, args.run, "final")
+    if os.path.exists(os.path.join(final_dir, "model.npz")):
+        m = np.load(os.path.join(final_dir, "model.npz"))
+        np.savez(os.path.join(out, "ridge.npz"), mean=m["mean"], scale=m["scale"], coef=m["coef"],
+                 intercept=m["intercept"], alpha=m["alpha"])
+        b_model = f"ridge {args.ridge_dir} alpha {float(m['alpha']):g}"
+    else:  # an MLP ensemble (pipeline/mlp_b_train.py --fits final): core.py runs mlp.npz in place of the ridge
+        shutil.copy(os.path.join(final_dir, "mlp.npz"), os.path.join(out, "mlp.npz"))
+        with np.load(os.path.join(out, "mlp.npz")) as z:
+            b_model = f"MLP {args.ridge_dir}, {int(z['n_nets'])} nets, centre {float(z['center']):.4f}"
 
     st = {}
     if args.stretch:
@@ -123,7 +131,7 @@ def main() -> None:
         for name in sorted(os.listdir(out)):
             z.write(os.path.join(out, name), arcname=name)
     print(f"{zpath}: {sorted(os.listdir(out))}; theta keys " + ", ".join(f"{p} {len(theta[p])}" for p in PARTS)
-          + f"; ridge {args.ridge_dir} alpha {float(m['alpha']):g}{stretch}; {os.path.getsize(zpath) / 1e6:.2f} MB")
+          + f"; {b_model}{stretch}; {os.path.getsize(zpath) / 1e6:.2f} MB")
 
 
 if __name__ == "__main__":

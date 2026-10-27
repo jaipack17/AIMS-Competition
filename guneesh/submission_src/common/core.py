@@ -5,7 +5,13 @@ theta   = theta_name + theta_harness + theta_provider + theta_effort, from our v
           (pipeline/irt_build_data.py); a value never seen in training contributes 0, except a name when
           name_date_prior.json is bundled: then an unseen name contributes a + b * (release date in years since
           2024, clipped), or 0 if the date is blank or unreadable.
-b_hat   = ridge(StandardScaler(embedding)), trained on that fit's item difficulties (ridge.npz).
+b_hat   = ridge(StandardScaler(embedding)), trained on that fit's item difficulties (ridge.npz), or, when mlp.npz is
+          bundled instead, the average of small MLPs (pipeline/mlp_b_train.py, final fit), run here in numpy.
+MIRT    (only when mirt.json is bundled; pipeline/mirt_fit.py, pipeline/mirt_ridge.py): ridge.npz then has one row per
+          item parameter [b, w1..wK] and the logit of base_logit() becomes
+            nested:  theta + u(subject) . w_hat(item) - b_hat        (u = sum of the parts' K-vectors in mirt.json)
+            m2pl:    theta_vec(subject) . w_hat(item) - b_hat         (theta_vec = sum of the parts' K-vectors)
+          Without mirt.json, base_logit() = theta - b_hat exactly as before.
           embedding = Qwen3-VL-8B-Instruct, last layer, last token, of AP's no-solution prompt
           "Task statement:\n{item_content}\n\n{instruction}", 8192 tokens with left truncation, bfloat16:
           the same code path (ap_embed_core.py, verbatim AP code) that made the training embeddings.
@@ -41,9 +47,22 @@ CACHE_DIR = HERE / "bhat_cache"
 
 with open(HERE / "theta.json", encoding="utf-8") as _f:
     THETA = json.load(_f)                      # {"name": {key: theta}, "harness": {...}, ...}
-with np.load(HERE / "ridge.npz") as _r:
-    RIDGE_MEAN, RIDGE_SCALE, RIDGE_COEF = _r["mean"], _r["scale"], _r["coef"]
-    RIDGE_INTERCEPT = float(_r["intercept"])
+# difficulty model: mlp.npz (an MLP ensemble, 1D only) if bundled, else ridge.npz
+_MLP_PATH = HERE / "mlp.npz"
+MLP: dict | None = None
+if _MLP_PATH.exists():
+    with np.load(_MLP_PATH) as _m:
+        MLP = {k: _m[k] for k in _m.files}
+    EMB_DIM = MLP["mean"].shape[0]
+    # mean training b: plays the ridge intercept's roles (smoke-test b_hat, default stretch centre)
+    RIDGE_INTERCEPTS = np.array([float(MLP["center"])])
+else:
+    with np.load(HERE / "ridge.npz") as _r:
+        RIDGE_MEAN, RIDGE_SCALE = _r["mean"], _r["scale"]
+        RIDGE_COEF = np.atleast_2d(_r["coef"])           # (T, 4096): T = 1 (b) or 1 + K (b, w1..wK) for MIRT
+        RIDGE_INTERCEPTS = np.atleast_1d(_r["intercept"]).astype(np.float64)
+    EMB_DIM = RIDGE_COEF.shape[1]
+RIDGE_INTERCEPT = float(RIDGE_INTERCEPTS[0])             # of b
 # optional stretch of b_hat around the training mean, b = center + k * (b_hat - center) (pipeline/stretch_factor.py);
 # without the file b_hat is used as the ridge gives it
 _STRETCH_PATH = HERE / "bhat_stretch.json"
@@ -60,6 +79,15 @@ NAME_PRIOR: dict | None = None
 if _NAME_PRIOR_PATH.exists():
     with open(_NAME_PRIOR_PATH, encoding="utf-8") as _f:
         NAME_PRIOR = json.load(_f)
+# optional MIRT subject vectors {"form": "nested" | "m2pl", "K": K, "subject": {part: {key: [K floats]}}};
+# without the file the model is the 1D one
+_MIRT_PATH = HERE / "mirt.json"
+MIRT: dict | None = None
+if _MIRT_PATH.exists():
+    with open(_MIRT_PATH, encoding="utf-8") as _f:
+        MIRT = json.load(_f)
+    assert MLP is None, "the MLP predicts b only: no MIRT with mlp.npz"
+    assert RIDGE_COEF.shape[0] == 1 + MIRT["K"], "ridge.npz must have one row per MIRT item parameter"
 _STATE: dict | None = None
 
 
@@ -77,14 +105,27 @@ def _lower(v: str) -> str:
     return re.sub(r"\s+", " ", v.strip().lower())
 
 
-def subject_theta(subject: dict) -> float:
+def _subject_keys(subject: dict) -> dict:
     provider = _lower(str(subject.get("provider") or ""))
-    keys = {
+    return {
         "name": str(subject.get("normalized_name") or "").strip(),
         "harness": _norm_harness(str(subject.get("harness") or "")),
         "provider": "" if provider == "unknown" else provider,
         "effort": _lower(str(subject.get("reasoning_effort") or "")),
     }
+
+
+def subject_vec(subject: dict) -> np.ndarray:
+    """MIRT: sum over the parts of their K-vectors (u for nested, theta for m2pl); unseen or blank keys add 0."""
+    v = np.zeros(MIRT["K"])
+    for part, key in _subject_keys(subject).items():
+        if key and key in MIRT["subject"].get(part, {}):
+            v += np.asarray(MIRT["subject"][part][key], dtype=np.float64)
+    return v
+
+
+def subject_theta(subject: dict) -> float:
+    keys = _subject_keys(subject)
     theta = float(sum(THETA[part].get(key, 0.0) for part, key in keys.items() if key))
     if NAME_PRIOR is not None and keys["name"] not in THETA["name"]:
         years = _release_years(str(subject.get("release_date") or ""))
@@ -191,24 +232,64 @@ def _embed(text: str) -> np.ndarray:
     return pooled.float().cpu().numpy()[0]
 
 
-def item_b_hat(item: dict) -> float:
+_erf = np.frompyfunc(math.erf, 1, 1)
+
+
+def mlp_b(x: np.ndarray) -> float:
+    """b_hat of the MLP ensemble for one embedding, as pipeline/mlp_b_train.Net in eval mode (no dropout, no input
+    noise): standardise; per hidden layer Linear -> LayerNorm (eps 1e-5) -> exact GELU; Linear; then
+    * y_sd + y_mean, averaged over the nets."""
+    z0 = (x - MLP["mean"]) / MLP["scale"]
+    outs = []
+    for i in range(int(MLP["n_nets"])):
+        z, j = z0, 0
+        while f"n{i}_W{j}" in MLP:
+            h = MLP[f"n{i}_W{j}"] @ z + MLP[f"n{i}_b{j}"]
+            h = (h - h.mean()) / np.sqrt(h.var() + 1e-5) * MLP[f"n{i}_g{j}"] + MLP[f"n{i}_beta{j}"]
+            z = 0.5 * h * (1.0 + _erf(h / math.sqrt(2.0)).astype(np.float64))
+            j += 1
+        outs.append(float((MLP[f"n{i}_Wout"] @ z + MLP[f"n{i}_bout"])[0]))
+    return float(np.mean(outs)) * float(MLP["y_sd"]) + float(MLP["y_mean"])
+
+
+def item_params(item: dict) -> np.ndarray:
+    """Ridge (or MLP) predictions [b_hat] (1D) or [b_hat, w1_hat..wK_hat] (MIRT); the stretch applies to b_hat
+    only."""
     if SMOKE_TEST:
-        return RIDGE_INTERCEPT
+        return RIDGE_INTERCEPTS.copy()
     text = ap.format_qs_instruction(question_statement=str(item.get("item_content") or ""),
                                     instruction=ap.DIFFICULTY_INSTRUCTION)
     path = CACHE_DIR / (hashlib.sha256(text.encode("utf-8")).hexdigest() + ".txt")
     if path.exists():
-        return float(path.read_text())
+        return np.array(path.read_text().split(), dtype=np.float64)
     x = _embed(text).astype(np.float64)
-    if x.shape != RIDGE_COEF.shape or not np.isfinite(x).all():
+    if x.shape != (EMB_DIM,) or not np.isfinite(x).all():
         raise RuntimeError(f"bad embedding: shape {x.shape}")
-    b = float(((x - RIDGE_MEAN) / RIDGE_SCALE) @ RIDGE_COEF + RIDGE_INTERCEPT)
-    b = STRETCH_CENTER + STRETCH_K * (b - STRETCH_CENTER)
+    if MLP is not None:
+        out = np.array([mlp_b(x)])
+    else:
+        out = RIDGE_COEF @ ((x - RIDGE_MEAN) / RIDGE_SCALE) + RIDGE_INTERCEPTS
+    out[0] = STRETCH_CENTER + STRETCH_K * (out[0] - STRETCH_CENTER)
     CACHE_DIR.mkdir(exist_ok=True)
     tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")  # unique name, then atomic rename
-    tmp.write_text(repr(b))
+    tmp.write_text(" ".join(repr(float(v)) for v in out))
     os.replace(tmp, path)
-    return b
+    return out
+
+
+def item_b_hat(item: dict) -> float:
+    return float(item_params(item)[0])
+
+
+def base_logit(subject: dict, item: dict) -> float:
+    """Logit before any label-based shift: theta - b_hat (1D), or the MIRT logit when mirt.json is bundled."""
+    if MIRT is None:
+        return subject_theta(subject) - item_b_hat(item)
+    p = item_params(item)
+    dot = float(subject_vec(subject) @ p[1:])
+    if MIRT["form"] == "nested":
+        return subject_theta(subject) + dot - float(p[0])
+    return dot - float(p[0])
 
 
 def sigmoid(z: float) -> float:
