@@ -1,0 +1,22 @@
+{
+ "benchmark": "auditing_sabotage_bench",
+ "fold": "fold2",
+ "n_target_train": 51,
+ "n_test": 17,
+ "stan": {
+  "r": -0.2679176276515026,
+  "mae": 0.13358377325215626,
+  "rmse": 0.17067515051261897
+ },
+ "source_only": {
+  "r": 0.28390195031275883,
+  "mae": 0.1586311260581682,
+  "rmse": 0.1941936390655352
+ },
+ "diagnostics": {
+  "final_mse": 1.3933343345343019e-05,
+  "final_domain_loss": 0.24506863242015242,
+  "final_disc_acc": 90.7546875
+ },
+ "minutes": 1416.283001569907
+}
