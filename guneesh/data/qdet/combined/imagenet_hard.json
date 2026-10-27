@@ -1,0 +1,49 @@
+{
+ "benchmark": "imagenet_hard",
+ "n_train": 2500,
+ "n_test": 2500,
+ "models": {
+  "emb_kridge_check": {
+   "r": 0.020173535152294118,
+   "rho": 0.02632535308616543,
+   "rmse": 1.5949219260676244,
+   "constant": false,
+   "lam": 10.0,
+   "sec": 4.5
+  },
+  "joint[q]": {
+   "r": 0.020173535152294118,
+   "rho": 0.02632535308616543,
+   "rmse": 1.5949219260676244,
+   "constant": false,
+   "w": 0.0,
+   "lam": 10.0,
+   "n_features": 0,
+   "sec": 40.4
+  },
+  "correction[q]": {
+   "r": 0.020173535152294118,
+   "rho": 0.02632535308616543,
+   "rmse": 1.5949219260676244,
+   "constant": false,
+   "no_features": true
+  },
+  "joint[full]": {
+   "r": 0.020173535152294118,
+   "rho": 0.02632535308616543,
+   "rmse": 1.5949219260676244,
+   "constant": false,
+   "w": 0.0,
+   "lam": 10.0,
+   "n_features": 0,
+   "sec": 39.7
+  },
+  "correction[full]": {
+   "r": 0.020173535152294118,
+   "rho": 0.02632535308616543,
+   "rmse": 1.5949219260676244,
+   "constant": false,
+   "no_features": true
+  }
+ }
+}

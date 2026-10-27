@@ -1,0 +1,35 @@
+110 benchmarks with results (4 skipped: aider, ehrflowbench, scbench_long, txbench_pp); 44 with a value for every model below
+
+                           model     r   rho  rmse  r - emb    se better than emb  r (all with value)   n
+                   correction[q] 0.474 0.440 1.364    0.008 0.009           16/44               0.451 110
+                correction[full] 0.473 0.440 1.362    0.007 0.008           17/44               0.448 110
+                      emb_kridge 0.466 0.441 1.341    0.000 0.000            0/44               0.445  48
+                        joint[q] 0.465 0.440 1.344   -0.001 0.006           24/44               0.450 110
+                     joint[full] 0.458 0.434 1.361   -0.008 0.004           25/44               0.448 110
+ling_paper+read+tfidf_full[full] 0.402 0.374 1.420   -0.064 0.020           11/44               0.393  46
+     ling_paper+read+tfidf_qa[q] 0.393 0.364 1.427   -0.073 0.020           12/44               0.386  45
+                        tfidf_qa 0.364 0.334 1.448   -0.102 0.027           10/44               0.357  45
+                      tfidf_full 0.357 0.332 1.454   -0.109 0.022           11/44               0.345  46
+                        tfidf_qo 0.352 0.323 1.455   -0.113 0.027           11/44               0.352  44
+           ling_paper+read[full] 0.333 0.301 1.483   -0.133 0.022            7/44               0.326  46
+              ling_paper+read[q] 0.329 0.300 1.483   -0.136 0.025            8/44               0.323  45
+                ling_paper[full] 0.324 0.289 1.491   -0.141 0.023            7/44               0.317  46
+                   ling_paper[q] 0.321 0.285 1.494   -0.145 0.025            8/44               0.315  45
+
+per-benchmark r of every model saved to analysis/qdet_r_all.csv
+
+setup check: emb_kridge recomputed by qdet_combined vs qdet_upper_bound, max |diff r| 9.5e-08 over 48 benchmarks
+
+combined models vs the embedding, over every benchmark qdet_combined ran (same/better/worse: |diff| < 0.005 counts as same):
+  joint[q]          emb r 0.451 -> 0.450  diff -0.0012 +/- 0.0028  better/same/worse 11/77/22 of 110
+  joint[full]       emb r 0.451 -> 0.448  diff -0.0029 +/- 0.0025  better/same/worse 11/79/20 of 110
+  correction[q]     emb r 0.451 -> 0.451  diff +0.0002 +/- 0.0049  better/same/worse 30/43/37 of 110
+  correction[full]  emb r 0.451 -> 0.448  diff -0.0027 +/- 0.0045  better/same/worse 28/39/43 of 110
+
+q vs full text (r, paired over the benchmarks with both):
+  ling_paper       +0.003 +/- 0.008  (ling_paper[full] better on 15/45)
+  ling_paper+read  +0.003 +/- 0.009  (ling_paper+read[full] better on 13/45)
+  joint            -0.002 +/- 0.003  (joint[full] better on 14/110)
+  correction       -0.003 +/- 0.002  (correction[full] better on 29/110)
+
+first benchmarks only: ling_paper[q] vs ling_code[q]: +0.036 +/- 0.028  (ling_paper[q] better on 6/7)

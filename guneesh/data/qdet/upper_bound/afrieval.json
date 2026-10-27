@@ -1,0 +1,96 @@
+{
+ "benchmark": "afrieval",
+ "n_train": 2500,
+ "n_test": 2500,
+ "models": {
+  "ling_code[q]": {
+   "r": 2.402828335424184e-16,
+   "rho": NaN,
+   "rmse": 2.63803827228034,
+   "sec": 23.0,
+   "cv_r2": -0.0014096984126616085
+  },
+  "ling_paper[q]": {
+   "r": 2.402828335424184e-16,
+   "rho": NaN,
+   "rmse": 2.63803827228034,
+   "sec": 2.9,
+   "cv_r2": -0.0014096984126616085
+  },
+  "read[q]": {
+   "r": 2.402828335424184e-16,
+   "rho": NaN,
+   "rmse": 2.63803827228034,
+   "sec": 2.9,
+   "cv_r2": -0.0014096984126616085
+  },
+  "ling_paper+read[q]": {
+   "r": 2.402828335424184e-16,
+   "rho": NaN,
+   "rmse": 2.63803827228034,
+   "sec": 3.5,
+   "cv_r2": -0.0014096984126616085
+  },
+  "ling_code[full]": {
+   "r": 0.22827118505033805,
+   "rho": 0.24854343338913595,
+   "rmse": 2.5857731681017633,
+   "sec": 24.0,
+   "cv_r2": -0.008397288674716652
+  },
+  "ling_paper[full]": {
+   "r": 0.27929413761135863,
+   "rho": 0.3087549568290645,
+   "rmse": 2.537697015307601,
+   "sec": 46.5,
+   "cv_r2": 0.044871214202916176
+  },
+  "read[full]": {
+   "r": 0.24555578078484339,
+   "rho": 0.2766760325619666,
+   "rmse": 2.5605201918762512,
+   "sec": 28.6,
+   "cv_r2": 0.020608841636166518
+  },
+  "ling_paper+read[full]": {
+   "r": 0.2863203314226056,
+   "rho": 0.3148620635122794,
+   "rmse": 2.5298638506318505,
+   "sec": 70.0,
+   "cv_r2": 0.049113151615293726
+  },
+  "tfidf_qo": {
+   "failed": "\nAll the 50 fits failed.\nIt is very likely that your model is misconfigured.\nYou can try to debug the error by setting error_score='raise'.\n\nBelow are more details about the failures:\n----------------"
+  },
+  "tfidf_qa": {
+   "failed": "\nAll the 50 fits failed.\nIt is very likely that your model is misconfigured.\nYou can try to debug the error by setting error_score='raise'.\n\nBelow are more details about the failures:\n----------------"
+  },
+  "tfidf_full": {
+   "r": 0.12713990682962767,
+   "rho": 0.1354328805217731,
+   "rmse": 2.6170760750361772,
+   "sec": 17.2,
+   "cv_r2": 0.006084376617147158
+  },
+  "ling_paper+read+tfidf_qa[q]": {
+   "r": 2.402828335424184e-16,
+   "rho": NaN,
+   "rmse": 2.63803827228034,
+   "sec": 4.5,
+   "cv_r2": -0.0014096984126616085
+  },
+  "ling_paper+read+tfidf_full[full]": {
+   "r": 0.3169932155939803,
+   "rho": 0.33427167876581076,
+   "rmse": 2.504424035761021,
+   "sec": 355.6,
+   "cv_r2": 0.06271120920344424
+  },
+  "emb_kridge": {
+   "r": 0.4008137007373966,
+   "rho": 0.44620144709390225,
+   "rmse": 2.4174494178614054,
+   "sec": 39.7
+  }
+ }
+}

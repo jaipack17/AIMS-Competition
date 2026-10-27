@@ -1,0 +1,4 @@
+{
+ "benchmark": "ehrflowbench",
+ "skipped": "too few items or constant b"
+}

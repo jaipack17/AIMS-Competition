@@ -1,0 +1,50 @@
+{
+ "benchmark": "live_agent_risk",
+ "n_train": 36,
+ "n_test": 37,
+ "models": {
+  "emb_kridge_check": {
+   "r": 0.7244000521103563,
+   "rho": 0.6678520625889046,
+   "rmse": 0.21675194523249755,
+   "constant": false,
+   "lam": 0.001,
+   "sec": 0.0
+  },
+  "joint[q]": {
+   "r": 0.7244000521103563,
+   "rho": 0.6678520625889046,
+   "rmse": 0.21675194523249755,
+   "constant": false,
+   "w": 0.0,
+   "lam": 0.001,
+   "n_features": 0,
+   "sec": 0.0
+  },
+  "correction[q]": {
+   "r": 0.7244000521103563,
+   "rho": 0.6678520625889046,
+   "rmse": 0.21675194523249755,
+   "constant": false,
+   "no_features": true
+  },
+  "joint[full]": {
+   "r": 0.8889405353515631,
+   "rho": 0.8003793266951161,
+   "rmse": 0.1537663254013998,
+   "constant": false,
+   "w": 30.0,
+   "lam": 0.001,
+   "n_features": 15,
+   "sec": 0.1
+  },
+  "correction[full]": {
+   "r": 0.7518559163460422,
+   "rho": 0.7778568041725936,
+   "rmse": 0.21225566005084676,
+   "constant": false,
+   "cv_r2": -0.6477212755849727,
+   "sec": 9.1
+  }
+ }
+}

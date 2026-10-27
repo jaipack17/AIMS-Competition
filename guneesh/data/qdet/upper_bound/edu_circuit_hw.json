@@ -1,0 +1,86 @@
+{
+ "benchmark": "edu_circuit_hw",
+ "n_train": 256,
+ "n_test": 257,
+ "models": {
+  "ling_paper[q]": {
+   "r": NaN,
+   "rho": NaN,
+   "rmse": 1.4249191033333373,
+   "constant": true,
+   "sec": 0.7,
+   "cv_r2": -0.029490333062099205
+  },
+  "ling_paper+read[q]": {
+   "r": NaN,
+   "rho": NaN,
+   "rmse": 1.4249191033333373,
+   "constant": true,
+   "sec": 0.7,
+   "cv_r2": -0.029490333062099205
+  },
+  "ling_paper[full]": {
+   "r": NaN,
+   "rho": NaN,
+   "rmse": 1.4249191033333373,
+   "constant": true,
+   "sec": 0.7,
+   "cv_r2": -0.029490333062099205
+  },
+  "ling_paper+read[full]": {
+   "r": NaN,
+   "rho": NaN,
+   "rmse": 1.4249191033333373,
+   "constant": true,
+   "sec": 0.7,
+   "cv_r2": -0.029490333062099205
+  },
+  "tfidf_qo": {
+   "r": NaN,
+   "rho": NaN,
+   "rmse": 1.4270948350683803,
+   "constant": true,
+   "sec": 0.5,
+   "cv_r2": -0.030525919302750993
+  },
+  "tfidf_qa": {
+   "r": NaN,
+   "rho": NaN,
+   "rmse": 1.4270948350683803,
+   "constant": true,
+   "sec": 0.5,
+   "cv_r2": -0.030525919302750993
+  },
+  "tfidf_full": {
+   "r": NaN,
+   "rho": NaN,
+   "rmse": 1.4270948350683803,
+   "constant": true,
+   "sec": 0.6,
+   "cv_r2": -0.030525919302750993
+  },
+  "ling_paper+read+tfidf_qa[q]": {
+   "r": NaN,
+   "rho": NaN,
+   "rmse": 1.4249191033333373,
+   "constant": true,
+   "sec": 1.0,
+   "cv_r2": -0.029490333062099205
+  },
+  "ling_paper+read+tfidf_full[full]": {
+   "r": NaN,
+   "rho": NaN,
+   "rmse": 1.4249191033333373,
+   "constant": true,
+   "sec": 1.2,
+   "cv_r2": -0.029490333062099205
+  },
+  "emb_kridge": {
+   "r": 0.3606256944898466,
+   "rho": 0.3402852400235272,
+   "rmse": 1.3376188132204068,
+   "constant": false,
+   "sec": 4.7
+  }
+ }
+}

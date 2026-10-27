@@ -1,0 +1,4 @@
+{
+ "benchmark": "scbench_long",
+ "skipped": "too few items or constant b"
+}

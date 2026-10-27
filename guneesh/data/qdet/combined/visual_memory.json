@@ -1,0 +1,7 @@
+{
+ "benchmark": "visual_memory",
+ "n_train": 2500,
+ "n_test": 2500,
+ "models": {},
+ "skipped_models": "embedding not informative (as emb_kridge in qdet_upper_bound)"
+}

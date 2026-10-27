@@ -1,0 +1,49 @@
+{
+ "benchmark": "edu_circuit_hw",
+ "n_train": 256,
+ "n_test": 257,
+ "models": {
+  "emb_kridge_check": {
+   "r": 0.3606257092155106,
+   "rho": 0.3402852400235272,
+   "rmse": 1.337618799220191,
+   "constant": false,
+   "lam": 1.0,
+   "sec": 0.1
+  },
+  "joint[q]": {
+   "r": 0.3606257092155106,
+   "rho": 0.3402852400235272,
+   "rmse": 1.337618799220191,
+   "constant": false,
+   "w": 0.0,
+   "lam": 1.0,
+   "n_features": 0,
+   "sec": 1.4
+  },
+  "correction[q]": {
+   "r": 0.3606257092155106,
+   "rho": 0.3402852400235272,
+   "rmse": 1.337618799220191,
+   "constant": false,
+   "no_features": true
+  },
+  "joint[full]": {
+   "r": 0.3606257092155106,
+   "rho": 0.3402852400235272,
+   "rmse": 1.337618799220191,
+   "constant": false,
+   "w": 0.0,
+   "lam": 1.0,
+   "n_features": 0,
+   "sec": 1.5
+  },
+  "correction[full]": {
+   "r": 0.3606257092155106,
+   "rho": 0.3402852400235272,
+   "rmse": 1.337618799220191,
+   "constant": false,
+   "no_features": true
+  }
+ }
+}

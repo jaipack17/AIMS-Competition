@@ -1,0 +1,61 @@
+{
+ "benchmark": "imagenet_hard",
+ "n_train": 2500,
+ "n_test": 2500,
+ "models": {
+  "ling_paper[q]": {
+   "r": NaN,
+   "rho": NaN,
+   "rmse": 1.5865580006179951,
+   "constant": true,
+   "sec": 2.0,
+   "cv_r2": -0.0007595399737247543
+  },
+  "ling_paper+read[q]": {
+   "r": NaN,
+   "rho": NaN,
+   "rmse": 1.5865580006179951,
+   "constant": true,
+   "sec": 2.1,
+   "cv_r2": -0.0007595399737247543
+  },
+  "ling_paper[full]": {
+   "r": NaN,
+   "rho": NaN,
+   "rmse": 1.5865580006179951,
+   "constant": true,
+   "sec": 3.0,
+   "cv_r2": -0.0007595399737247543
+  },
+  "ling_paper+read[full]": {
+   "r": NaN,
+   "rho": NaN,
+   "rmse": 1.5865580006179951,
+   "constant": true,
+   "sec": 2.1,
+   "cv_r2": -0.0007595399737247543
+  },
+  "tfidf_qo": {
+   "failed": "\nAll the 50 fits failed.\nIt is very likely that your model is misconfigured.\nYou can try to debug the error by setting error_score='raise'.\n\nBelow are more details about the failures:\n----------------"
+  },
+  "tfidf_qa": {
+   "failed": "\nAll the 50 fits failed.\nIt is very likely that your model is misconfigured.\nYou can try to debug the error by setting error_score='raise'.\n\nBelow are more details about the failures:\n----------------"
+  },
+  "tfidf_full": {
+   "failed": "\nAll the 50 fits failed.\nIt is very likely that your model is misconfigured.\nYou can try to debug the error by setting error_score='raise'.\n\nBelow are more details about the failures:\n----------------"
+  },
+  "ling_paper+read+tfidf_qa[q]": {
+   "failed": "empty vocabulary; perhaps the documents only contain stop words"
+  },
+  "ling_paper+read+tfidf_full[full]": {
+   "failed": "empty vocabulary; perhaps the documents only contain stop words"
+  },
+  "emb_kridge": {
+   "r": 0.020173535454363747,
+   "rho": 0.02632535308616543,
+   "rmse": 1.5949219264789356,
+   "constant": false,
+   "sec": 24.6
+  }
+ }
+}
