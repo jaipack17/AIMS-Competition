@@ -14,11 +14,39 @@ It is written so that another person, or another Claude session, can take over t
 
   The commands below then call it as `../starting_kit/tools/...`.
 * **All commands in this README are run from inside `guneesh/`** (we call it the "project root"). The scripts use paths such as `data/irt/...` and `submissions/...` relative to it.
-* State of this README: **22 October 2026**. Deadline for code and report: **30 October 2026, Anywhere on Earth**.
+* State of this README: **28 October 2026**. Deadline for code and report: **30 October 2026, Anywhere on Earth**.
+
+---
+
+## How to read this repository
+
+**What Guneesh did, in five lines:**
+
+1. Built the base method of the Agent Psychometrics paper: an IRT model gives every subject an ability and every training item a difficulty; a ridge regression learns to predict the difficulty of a new item from its Qwen3-VL-8B text embedding (sections 1–4).
+2. Added a **label update**: the bought labels of a new benchmark correct its overall difficulty, each subject's ability on it, and each labelled item, with averaging over the remaining uncertainty and a release-date rule for unseen models (sections 5–6). This was the biggest gain.
+3. Built a local copy of the competition (5 folds × 30 draws) to compare every version on the same draws (section 8), and 21 submission zips (`submissions/`).
+4. Found that most of the remaining error is the **ranking of items inside a new benchmark**, and tried 7 ways to predict difficulty better: MIRT, an MLP, Truong et al., per-benchmark directions, a shared low-rank subspace, STAN and the QDET text features (`EXPERIMENTS.md`). Only the MLP helped, a little.
+5. Recommended final zip: `submissions/label_update_stretch1_tuned/` (local Brier ALC 0.2196; backup `label_update_3improvements_tuned`, 0.2214).
+
+**Reading order:**
+
+| If you want to … | Read |
+|---|---|
+| know the state in 2 minutes | section 0 below |
+| upload or check a submission | `submissions/README.md` (the index), then the README inside each submission folder |
+| understand the method | sections 1, 4 and 5 below (the formal version is `report.md`) |
+| see what was tried after 23 October and why it failed or worked | `EXPERIMENTS.md` |
+| run or rebuild something | sections 7–10 below; every script starts with a docstring that says what it does and how to run it |
+| continue the work | sections 12 and 13 below, and section 12 of `EXPERIMENTS.md` |
+
+**What is where:** code that trains models is in `pipeline/`, the code that goes inside a zip is in `submission_src/`, the built zips are in `submissions/`, tests, the simulator and all result tables (`.csv`) are in `analysis/`, small trained outputs and result summaries are in `data/`, and run logs are in `logs/`. Large data (embeddings, IRT fits) is on Hugging Face (section 10).
 
 ---
 
 ## Contents
+
+* [How to read this repository](#how-to-read-this-repository)
+* [`EXPERIMENTS.md`](EXPERIMENTS.md): every experiment after 23 October (separate file)
 
 0. [Quick status: read this first](#0-quick-status-read-this-first)
 1. [The competition in short](#1-the-competition-in-short)
@@ -42,10 +70,13 @@ It is written so that another person, or another Claude session, can take over t
 
 | Question | Answer |
 |---|---|
-| What should be uploaded now? | `submissions/label_update_3improvements_tuned/label_update_3improvements_tuned.zip`. Local Brier ALC **0.2214**. All checks passed. |
-| What is the best idea found so far? | The same method with the **stretch 1 ridge** (`data/ridge_within`): local ALC **0.2196** (0.0018 ± 0.0005 better, wins at every budget, wins on 4 of 5 folds). **Not built as a zip yet.** Next step: tune `sigma_item` and `sigma_delta` for this ridge, build `label_update_stretch1_tuned.zip`, run all checks. Build command in section 12. |
-| Codabench scores so far | `ap_pure` ≈ 0.217 (9 pairs), `label_update` ≈ 0.178 (8 pairs). The four stretch uploads were still pending. Codabench was down on 22 Oct; the organizers said to test locally on the training data instead. |
-| Biggest open decision | The organizers confirmed that **calling LLM APIs during scoring is allowed** (Anthropic, OpenAI, Google, xAI, DeepSeek, Mistral, Together AI, Groq; no web search or browsing). It is not yet clear how API keys are supplied at scoring time or who pays. See section 12.2. |
+| What is the final submission? | **`submissions/label_update_stretch1_tuned/label_update_stretch1_tuned.zip`**: the tuned label method on the stretch 1 ridge. Local Brier ALC **0.2196** (0.0018 ± 0.0005 better than the backup, better at every budget and on 4 of 5 folds). Logic tests, starting-kit checks and smoke test passed. |
+| Backup | `submissions/label_update_3improvements_tuned/` (local ALC 0.2214; GPU-checked on Modal). |
+| Best MLP version | `submissions/label_update_3improvements_tuned_mlp/` (0.2198): the same as the backup with the MLP difficulty model. It ties the final, so the smaller ridge zip was kept. |
+| Codabench scores so far | Between 0.160 and 0.36 for the different zips (full list in `submissions/README.md`). Each upload is scored on only about 8 random pairs, so these are noisy and are **not used to choose** (section 11.4). |
+| What was tried after 23 Oct? | MIRT, an MLP, Truong et al., per-benchmark directions, a low-rank subspace, STAN and the QDET text features, all to rank items better inside a new benchmark. Only the MLP helped. See `EXPERIMENTS.md`. |
+| Still running when this was pushed | `pipeline/qdet_upper_bound.py` (the QDET paper models inside each benchmark; 48 of 115 benchmarks done). Its conclusion is already clear (EXPERIMENTS.md section 10). |
+| Open question | The organizers confirmed that **calling LLM APIs during scoring is allowed** (Anthropic, OpenAI, Google, xAI, DeepSeek, Mistral, Together AI, Groq; no web search or browsing). It is not clear how API keys are supplied at scoring time or who pays, so this was not used. See section 12.2. |
 | Where is the long technical report? | `report.md` in this folder (about 6,300 words). This README contains everything in it and more. |
 | Which file must never be read or used? | `SUBMISSION_1.md` in Guneesh's local project. Guneesh asked that it not be used until Guneesh says so. It is **not** in this repository. |
 | Where are the embeddings and IRT data? | On Hugging Face (public, 2.56 GB): https://huggingface.co/datasets/GunGG4/paiec-Qwen8Binstruct-guneesh-data . From inside `guneesh/` run `hf download GunGG4/paiec-Qwen8Binstruct-guneesh-data --repo-type dataset --local-dir data` (see section 10). |
@@ -106,8 +137,9 @@ The official starting kit is on the `main` branch in `starting_kit/`. The full i
 ```
 guneesh/
 ├── README.md                 this file
-├── report.md                 the technical report (shorter, more formal version of this README)
-├── pipeline/                 training code: data tables, IRT, embeddings, ridge, priors, submission builder, GPU check
+├── EXPERIMENTS.md            report of every experiment after 23 October (MIRT, MLP, Truong, directions, low-rank, STAN, QDET)
+├── report.md                 the technical report of the base method (shorter, more formal version of sections 1-9)
+├── pipeline/                 training code: data tables, IRT, embeddings, ridge, MLP, priors, submission builder, experiments
 ├── submission_src/           SOURCE code of the submissions (what goes into the zips)
 │   ├── common/               core.py, ap_embed_core.py, models.txt   (shared by every submission)
 │   ├── ap_pure/              model.py
@@ -139,6 +171,19 @@ guneesh/
 | `name_date_prior.py` | Fits the release-date line for unseen names. `--fold final` (default) or `fold0`..`fold4`. | `data/irt/<run>/<fold>/name_date_prior.json` |
 | `build_submission.py` | Assembles a submission folder and zip from `submission_src/` and the trained files. | `submissions/<name>/` and `submissions/<name>.zip` |
 | `modal_check_submission.py` | Runs a built submission on a Modal A100 with the hub offline, like the platform, and checks it. | printed report |
+| `mlp_b_train.py` | **MLP difficulty model** (EXPERIMENTS.md section 3): 6 small MLPs in place of the ridge, same outputs; `--fits final` also packs `mlp.npz` for the submission. | `data/mlp_b/<run>/<fit>/` |
+| `stretch_factor_mlp.py` | Stretch-2 factor and per-fold centres for the MLP. | `data/mlp_b/<run>/stretch.json`, `fold*/center.json` |
+| `mirt_fit.py`, `modal_mirt.py` | Multidimensional IRT fits (nested and m2pl, K dimensions), run on Modal. | `data/irt/mirt_<form>_K<K>/<fit>/` (on Hugging Face) |
+| `mirt_ridge.py` | Ridge from the embedding to every MIRT item parameter. | `data/ridge_mirt/` |
+| `hf_upload_mirt.py`, `modal_volume_backup.py` | Upload the MIRT fits to Hugging Face; copy a Modal volume to disk. | |
+| `amortized_b_train.py` | Our own variant of amortized calibration (debug only, dropped). | `data/amortized_b_*_debug/` |
+| `avgdir_train.py` | Per-benchmark difficulty directions, averaged (uniform or similarity-weighted). | `data/avgdir_{uniform,simw}/` |
+| `lowrank_dir.py` | Shared low-rank difficulty subspace test. | `data/lowrank/` |
+| `stan_readability.py` | 8 parser-free readability features (used by STAN and QDET). | `data/stan/readability.parquet` |
+| `qdet_features.py` | QDET linguistic, readability and TF-IDF text features of every item. | `data/qdet/features.parquet`, `tfidf_text.parquet` |
+| `qdet_upper_bound.py`, `qdet_combined.py` | QDET models inside each benchmark; QDET features added to the embedding. | `data/qdet/upper_bound/`, `data/qdet/combined/` |
+
+Not in this repository (no licence on the code they copy; see `EXPERIMENTS.md`): `truong_amortized.py`, `modal_truong.py`, `stan_train.py`.
 
 ### 2.2 `analysis/` (data, tests, simulation)
 
@@ -156,6 +201,12 @@ guneesh/
 | `test_label_update.py` | Logic tests of a built label submission (section 7) |
 | `test_name_date_prior.py` | Tests of the release-date rule in a built submission |
 | `simulate_alc_*.csv` | Results of every simulation run (one row per draw × pair × configuration) |
+| `oracle_alc.py` | The simulation with perfect item difficulties (the ceiling; EXPERIMENTS.md section 1) |
+| `mlp_variants.py`, `mlp_variants_report.py` | Build every MLP zip and its ridge twin, check and simulate them; print the paired table |
+| `test_mlp_submission.py` | Tests of the MLP inside the submission (numpy = torch; bundled file = training predictions) |
+| `test_mirt_fit.py`, `mirt_mlp_check.py`, `mirt_fit_summary.csv` | MIRT fitter test on simulated data; can an MLP predict MIRT loadings; AIC/BIC of the 70 fits |
+| `test_lowrank_dir.py`, `lowrank_report.py` | Low-rank test on synthetic data; result tables |
+| `test_qdet_features.py`, `qdet_report.py`, `qdet_r_all.csv` | QDET feature tests against the original code; result tables; per-benchmark r of every QDET model |
 | `*.parquet`, `*.txt`, `*.csv` | Small tables made by the scripts above (benchmark lists, subject lists, token lengths) |
 
 ### 2.3 `submissions/`
@@ -227,14 +278,26 @@ Note: the rows for the older zips (`label_update`, `*_date`, `*_stretch*`) were 
 
 ### 3.2 Codabench results
 
-| Submission | Codabench Brier ALC | Pairs | Notes |
-|---|---|---|---|
-| ap_pure | ≈ 0.217 | 9 | Same value at every budget, as expected |
-| label_update | ≈ 0.178 | 8 | Big gains on pairs that were badly off at budget 0 (e.g. 0.640 → 0.056, 0.241 → 0.004) |
-| ap_pure_stretch1, ap_pure_stretch2, label_update_stretch1, label_update_stretch2 | pending | | Uploaded; results not back when Codabench went down |
-| label_update_3improvements(_tuned), *_date | not uploaded / unknown | | |
+| Submission | Codabench Brier ALC | Local ALC |
+|---|---|---|
+| ap_pure | 0.217 (9 pairs) | 0.2588 |
+| ap_pure_stretch1 | 0.359 | 0.2584 |
+| ap_pure_stretch2 | 0.2457 | 0.2639 |
+| label_update | 0.178 (8 pairs) | 0.2246 |
+| label_update_date | 0.1948 | 0.2249 |
+| label_update_stretch1_date | 0.1649 | 0.2254 |
+| label_update_stretch2_date | 0.1596 | 0.2273 |
+| label_update_3improvements | 0.2099 | 0.2227 |
+| label_update_3improvements_tuned | 0.2145 | 0.2214 |
+| sim_stretch2 | 0.2025 | 0.2229 |
+| label_update_stretch1_tuned | 0.193 (partial; still running at the last check) | 0.2196 |
+| MLP zips | 0.164 to 0.211, one failed (see `submissions/README.md`) | 0.2198 to 0.2258 |
 
-Each Codabench upload is scored on its own random draw of only 8 or 9 pairs, so single uploads are noisy and cannot be compared closely. The ranking agrees with the local test (label_update beats ap_pure). **Never tune anything on Codabench scores.**
+Each Codabench upload is scored on its own random draw of only about 8 pairs, so single uploads are very noisy (section 11.4). The Codabench order does not match the local order, as expected from that noise. **Never tune or choose anything on Codabench scores.**
+
+### 3.4 Results after 23 October
+
+The new difficulty models and their within-benchmark ranking r on held-out benchmarks (ridge 0.133, MLP 0.158, deep MLP 0.163, averaged directions 0.157–0.161, Truong 0.107), the oracle ceiling (0.13), the MIRT, low-rank, STAN and QDET tests, and the MLP submissions are all in **`EXPERIMENTS.md`**.
 
 ### 3.3 What the results teach us
 
@@ -477,21 +540,25 @@ Each folder in `submissions/` has its own detailed README. Code versions are giv
 
 | Submission | model.py | core.py | Ridge | Settings | Local ALC | Codabench |
 |---|---|---|---|---|---|---|
-| `ap_pure` | ap_pure `933260da` | `16acf1e4` (v1) | original | – | 0.2588 | ≈ 0.217 |
-| `ap_pure_stretch1` | `933260da` | `16acf1e4` | stretch 1 | – | 0.2584 | pending |
-| `ap_pure_stretch2` | `933260da` | `16acf1e4` | original + k = 4.05 | – | 0.2639 | pending |
-| `label_update` | v1 `fa60706c` | `16acf1e4` | original | sd 0.456, sz 1.110 | 0.2246 | ≈ 0.178 |
-| `label_update_stretch1` | v1 | `16acf1e4` | stretch 1 | sd 0.587 | 0.2250 | pending |
-| `label_update_stretch2` | v1 | `16acf1e4` | original + k | sd 0.570 | 0.2275 | pending |
-| `label_update_date` | v1 | `17dd3912` (date rule) | original | sd 0.456 + date | 0.2249 | – |
-| `label_update_stretch1_date` | v1 | `17dd3912` | stretch 1 | sd 0.587 + date | 0.2254 | – |
-| `label_update_stretch2_date` | v1 | `17dd3912` | original + k | sd 0.570 + date | 0.2273 | – |
-| `label_update_3improvements` | v2 `788a51b0` | `bb307981` (current) | original | sd 0.456, si 0.975, item, avg, date | 0.2227 | – |
-| **`label_update_3improvements_tuned`** | v2 | `bb307981` | original | **sd 0.912**, si 0.975, item, avg, date | **0.2214** | – |
+| `ap_pure` | ap_pure `933260da` | `16acf1e4` (v1) | original | – | 0.2588 | 0.217 |
+| `ap_pure_stretch1` | `933260da` | `16acf1e4` | stretch 1 | – | 0.2584 | 0.359 |
+| `ap_pure_stretch2` | `933260da` | `16acf1e4` | original + k = 4.05 | – | 0.2639 | 0.2457 |
+| `label_update` | v1 `fa60706c` | `16acf1e4` | original | sd 0.456, sz 1.110 | 0.2246 | 0.178 |
+| `label_update_stretch1` | v1 | `16acf1e4` | stretch 1 | sd 0.587 | 0.2250 | no result |
+| `label_update_stretch2` | v1 | `16acf1e4` | original + k | sd 0.570 | 0.2275 | no result |
+| `label_update_date` | v1 | `17dd3912` (date rule) | original | sd 0.456 + date | 0.2249 | 0.1948 |
+| `label_update_stretch1_date` | v1 | `17dd3912` | stretch 1 | sd 0.587 + date | 0.2254 | 0.1649 |
+| `label_update_stretch2_date` | v1 | `17dd3912` | original + k | sd 0.570 + date | 0.2273 | 0.1596 |
+| `label_update_3improvements` | v2 `788a51b0` | `bb307981` (v2) | original | sd 0.456, si 0.975, item, avg, date | 0.2227 | 0.2099 |
+| `label_update_3improvements_tuned` (backup) | v2 | `bb307981` | original | **sd 0.912**, si 0.975, item, avg, date | 0.2214 | 0.2145 |
+| `sim_stretch1` | v2 | `bb307981` | stretch 1 | sd 0.587, si 0.971, item, avg, date | 0.2209 | – |
+| `sim_stretch2` | v2 | `bb307981` | original + k | sd 0.570, si 0.978, item, avg, date | 0.2229 | 0.2025 |
+| **`label_update_stretch1_tuned`** (final) | v3 `40ce932f` | `09ff0baa` (v3, MIRT-capable) | stretch 1 | **sd 1.173**, si 0.971, item, avg, date | **0.2196** | 0.193 (partial) |
+| 7 × `<name>_mlp` | v3 | `164ff4f0` (v4, + MLP) | MLP `mlp.npz` | as the ridge zip of the same name, sigmas re-measured for the MLP | 0.2198–0.2258 | see `submissions/README.md` |
 
-(sd = sigma_delta, sz = sigma_zeta, si = sigma_item; sigma_zeta is 1.110 everywhere; `labeling.py` is `bdfe8b2d` in every label submission.)
+(sd = sigma_delta, sz = sigma_zeta, si = sigma_item; sigma_zeta is 1.110 everywhere; `labeling.py` is `bdfe8b2d` in every label submission. model.py v3 and core.py v3 add MIRT support (`mirt.json`); core.py v4 also supports `mlp.npz`. Without those files, v3 and v4 give exactly the v2 predictions.)
 
-The current source in `submission_src/` equals `ap_pure` `933260da`, v2 `788a51b0`, core `bb307981`, labeling `bdfe8b2d`.
+The current source in `submission_src/` is model.py v3 `40ce932f`, core.py v4 `164ff4f0`, ap_pure `model.py` `2f8e0185` (now calls `core.base_logit`). Run `md5sum` on a zip's files to compare.
 
 ---
 
@@ -636,7 +703,13 @@ The table below lists what is not in the GitHub repository:
 | Two Modal logs (`download_8b.log`, `modal_full_8b.log`) | | not needed | contain an account e-mail |
 | `SUBMISSION_1.md` | | not to be used | |
 | `bhat_cache/` folders | | runtime cache only | |
-| Test builds `submissions/sim_stretch1`, `sim_stretch2` | | only for the stretch simulation | build commands in section 12.1 (same options with `--name sim_stretch1` / `sim_stretch2`) |
+| Experiment outputs: `pred.parquet` of `data/mlp_b`, `mlp_b_deep7`, `avgdir_*`, `truong_amortized`, `ridge_mirt`; network weights; `data/lowrank/*/basis.npz` | about 30 MB each | re-scoring the experiments | the script named in `EXPERIMENTS.md` (only the summaries are here; `data/mlp_b/.../final/mlp.npz` is included) |
+| `data/qdet/features.parquet`, `tfidf_text.parquet`, `parts/`; `data/stan/readability.parquet` | 0.7 GB | the QDET and STAN runs | `pipeline/qdet_features.py`, `pipeline/stan_readability.py` |
+| `data/modal_backup/` (copies of the Modal volumes) | 40 GB | nothing (backup only) | |
+| `pipeline/truong_amortized.py`, `modal_truong.py`, `stan_train.py`, `analysis/test_stan.py` | | the Truong and STAN runs | they copy code from repositories without a licence; available from Guneesh on request |
+| Modal launch logs, Hugging Face upload logs, backup logs | | not needed | they show account names |
+| `submissions/check_tuned_v2` | | a regression check only (identical predictions to the tuned zip) | its simulation is `analysis/simulate_alc_check_tuned_v2_regression.csv` |
+| The 7 MLP zips' `mlp.npz` inside `files/` | 33 MB each | | it is inside each zip, and once in `data/mlp_b/versionB_4parts_logitnormal/final/` |
 
 **What is included in `data/`:** `irt/folds.csv`, `irt/subjects.parquet`, every fit's `theta_*.parquet`, `zeta.parquet`, `hyper.json`, `losses.csv`, `name_date_prior.json`; every ridge fit's `model.npz`, `pred.parquet`, `summary.json` (original and stretch 1); `ridge/.../stretch.json`; summaries of the soft and sklearn ridges; `submission_check_items*.parquet`; `irt_build.log`; `emb/qwen3vl8b/_progress.csv`.
 
@@ -659,7 +732,13 @@ Without the Hugging Face download: to run the **simulation** you only need to re
 1. First upload failed with **`PAIEC-HF-REMOTE-CODE`**: the loader passed the repo name through a variable. Fixed by writing the literal `"Qwen/Qwen3-VL-8B-Instruct"` in each `from_pretrained` call in `core.py`.
 2. `ap_pure` ran: ALC ≈ 0.217 (9 pairs).
 3. `label_update` ran: ALC ≈ 0.178 (8 pairs).
-4. Four stretch zips uploaded; the queue was long and then the site went down (22 Oct). Results pending.
+4. Four stretch zips uploaded; the queue was long and then the site went down (22 Oct).
+5. 26 Oct: Codabench back. Ten more ridge zips uploaded; results in section 3.2. `label_update_stretch1_tuned` stayed "Running" (partial 0.193) and `sim_stretch1` stayed "Scoring".
+6. 27 Oct: six MLP zips uploaded; five scored, `label_update_date_mlp` failed. Its code is identical to the working `label_update_stretch2_date_mlp`, so this is probably a platform error.
+
+### 11.4 How noisy is one Codabench score?
+
+From our simulation: the ALC of one draw of 7–8 pairs has a standard deviation of **0.022**, and 90% of draws fall between 0.174 and 0.248. The same zip uploaded twice gives scores 0.055 or more apart in 9% of cases. Even on the same draw, `label_update_stretch2_date` beats `label_update_stretch1_tuned` in only 22% of draws, although it is clearly worse on average. This is why the final choice uses the local 150-draw result only.
 
 ### 11.3 The probe submission
 
@@ -674,25 +753,17 @@ Without the Hugging Face download: to run the **simulation** you only need to re
 | 15 | GPU memory ≥ 60 GB |
 | 31 | `accelerate` importable |
 
-It inspects only our own environment and never records or sends test data. Its result is not recorded here; since `ap_pure` and `label_update` ran successfully, the model clearly works on the platform.
+It inspects only our own environment and never records or sends test data. Its result is not recorded here; since many submissions ran successfully, the model clearly works on the platform.
 
 ---
 
 ## 12. Open questions and next steps
 
-### 12.1 Immediate (CPU only, about 1–2 days)
+### 12.1 Immediate (state on 28 October)
 
-1. **Upload `label_update_3improvements_tuned.zip`** when Codabench is back.
-2. **Build the stretch 1 version.** Tune `sigma_item` (scales 0.4–1.0) and `sigma_delta` (scales 1–3) for the stretch 1 ridge with `simulate_alc.py` and the leave-one-fold-out rule, then build:
-
-   ```
-   python pipeline/build_submission.py --variant label_update --name label_update_stretch1_tuned --ridge_dir data/ridge_within \
-       --name_prior data/irt/versionB_4parts_logitnormal/final/name_date_prior.json \
-       --item_shifts --average --sigma_item_scale 0.6 --sigma_delta_scale 2.0      # replace the scales with the tuned ones
-   ```
-
-   Run all tests in section 7. The GPU check needs `data/submission_check_items_label_update_stretch1.parquet` (present). Keep it only if it beats the tuned zip clearly (it currently wins on 4 of 5 folds).
-3. Read the stretch results from Codabench when they arrive; record them (do not tune on them).
+1. **Final choice:** `label_update_stretch1_tuned.zip` (built with the same scales as the tuned zip, 0.6 and 2.0, and all CPU checks passed; it was not re-tuned on its own). Make sure it is the submission Codabench counts. If its upload stays stuck on "Running", re-upload it or ask the organizers.
+2. Optional: run `modal run pipeline/modal_check_submission.py --variant label_update_stretch1_tuned` (GPU) for a full end-to-end check; its code is v3, which gives exactly the predictions of the GPU-checked v2 code when no `mirt.json` is bundled.
+3. Write the competition report: `report.md` (base method) and `EXPERIMENTS.md` (everything after) are the base. Disclose Qwen3-VL-8B and the use of Claude as a coding assistant.
 
 ### 12.2 The LLM API question (needs a team decision)
 
@@ -718,12 +789,12 @@ The extra network calls also change the worker count (API submissions get up to 
 4. **One shared shift per subject across benchmarks** (helps only when a subject appears in several pairs of a draw, which looks rare).
 5. **Model family matching** for unseen names, and a similar rule for unseen harnesses (low priority: the date rule showed no local effect).
 
+Status of these ideas on 28 October: idea 1 was tried in many forms (MLP, deeper MLP, directions, low-rank, Truong, STAN, QDET text features; see `EXPERIMENTS.md`); only the MLP helped. Ideas 2–5 were not tried.
+
 ### 12.4 Plan to the deadline (30 Oct AoE)
 
-* Now: upload the tuned zip; tune and build the stretch 1 version.
-* Next 2–3 days: label-use ideas in the simulation; decide on the LLM API question.
-* If GPU budget allows: embedding layer test on a few benchmarks.
-* **Freeze the final zip 2 days before the deadline** (28 Oct), run every check, upload, finish the report (`report.md` is the base; disclose Qwen3-VL-8B and the use of Claude as a coding assistant).
+* 28 Oct: **freeze** `label_update_stretch1_tuned` as the final zip; no new methods.
+* Until 30 Oct: finish the report from `report.md` and `EXPERIMENTS.md`.
 
 ---
 

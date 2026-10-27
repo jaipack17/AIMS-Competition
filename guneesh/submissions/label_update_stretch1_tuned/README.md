@@ -30,4 +30,4 @@ python pipeline/build_submission.py --variant label_update --name label_update_s
 
 ## Code
 
-`core.py` and `model.py` are the newer MIRT/MLP-capable versions; with no `mirt.json` or `mlp.npz` they give exactly the old predictions (regression test `analysis/simulate_alc_check_tuned_v2_regression.csv`). Not GPU-checked on Modal; the logic tests, the starting-kit checks and the smoke test passed.
+`core.py` (`09ff0baa`) and `model.py` (`40ce932f`) are the newer MIRT-capable versions; with no `mirt.json` they give exactly the old predictions (regression test `analysis/simulate_alc_check_tuned_v2_regression.csv`). Not GPU-checked on Modal; the logic tests, the starting-kit checks and the smoke test passed.

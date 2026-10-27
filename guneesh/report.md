@@ -4,6 +4,8 @@ This report explains every submission we have built for the Stanford AIMS PAIEC 
 
 All code is in the project folder `AIMS_project`. Built submissions are in `submissions/`.
 
+> **Note (28 October 2026):** this report describes the state of 22 October. Since then, the stretch 1 version of the tuned submission was built (`label_update_stretch1_tuned`, local ALC 0.2196) and is now the recommended final, with `label_update_3improvements_tuned` as the backup. Every experiment after 22 October (MIRT, MLP, Truong et al., per-benchmark directions, low-rank subspace, STAN, QDET features) is described in `EXPERIMENTS.md`.
+
 ---
 
 ## 1. The task in short
