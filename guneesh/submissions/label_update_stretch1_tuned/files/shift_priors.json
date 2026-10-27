@@ -1,0 +1,14 @@
+{
+ "sigma_delta": 1.1733465649922803,
+ "sigma_zeta": 1.109951138496399,
+ "sigma_item": 0.970891313262733,
+ "n_benchmarks_for_sigma_delta": 115,
+ "run": "versionB_4parts_logitnormal",
+ "ridge_dir": "data/ridge_within",
+ "item_shifts": true,
+ "average_over_uncertainty": true,
+ "sigma_item_measured": 1.6181521887712218,
+ "sigma_item_scale": 0.6,
+ "sigma_delta_measured": 0.5866732824961401,
+ "sigma_delta_scale": 2.0
+}

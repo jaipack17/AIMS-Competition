@@ -1,0 +1,13 @@
+{
+ "sigma_delta": 0.5101177096366882,
+ "sigma_zeta": 1.109951138496399,
+ "sigma_item": 0.9682335376739502,
+ "n_benchmarks_for_sigma_delta": 115,
+ "run": "versionB_4parts_logitnormal",
+ "ridge_dir": "data/mlp_b",
+ "item_shifts": true,
+ "average_over_uncertainty": true,
+ "sigma_item_measured": 1.613722562789917,
+ "sigma_item_scale": 0.6,
+ "sigma_delta_source": "data/mlp_b/versionB_4parts_logitnormal/stretch.json"
+}

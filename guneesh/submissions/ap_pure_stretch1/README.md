@@ -7,7 +7,7 @@
 | Zip | `ap_pure_stretch1.zip` (the same files are unpacked in `files/`) |
 | Uses labels? | No |
 | Code | Byte-identical to `ap_pure` (`model.py`, `core.py`, `ap_embed_core.py`). Only `ridge.npz` and `shift_priors.json` differ. |
-| Codabench result | Uploaded. The result was still pending when this README was written (Codabench was down). |
+| Codabench result | Brier ALC **0.359** (uploaded 26 Oct). One upload is scored on only about 8 random pairs, so single scores are noisy (see ../README.md). |
 | Local 5-fold result | Brier ALC **0.2584** (vs 0.2588 for `ap_pure`) |
 | Status | Experiment. Not better on its own. The ridge is useful together with the label improvements (see `label_update_3improvements_tuned` README, "stretch 1" row). |
 

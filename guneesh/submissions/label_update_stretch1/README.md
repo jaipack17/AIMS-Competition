@@ -7,7 +7,7 @@
 | Zip | `label_update_stretch1.zip` (files unpacked in `files/`) |
 | Uses labels? | Yes |
 | Code | Byte-identical to `label_update` (`model.py`, `labeling.py`, `core.py`). Only `ridge.npz` and `shift_priors.json` differ. |
-| Codabench result | Uploaded. Still pending when this README was written (Codabench was down). |
+| Codabench result | Uploaded on 22 Oct; no result was recorded. One upload is scored on only about 8 random pairs, so single scores are noisy (see ../README.md). |
 | Local 5-fold result | Brier ALC **0.2250** (vs 0.2246 for `label_update`) |
 | Status | Experiment. Not better on its own. |
 

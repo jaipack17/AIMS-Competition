@@ -1,4 +1,4 @@
-# Submission `label_update_3improvements_tuned` (current recommended upload)
+# Submission `label_update_3improvements_tuned` (backup final submission)
 
 **In one sentence:** exactly `label_update_3improvements`, but with the benchmark-shift prior `sigma_delta` doubled from 0.456 to **0.912**, which the local tuning showed is better.
 
@@ -8,9 +8,9 @@
 | Uses labels? | Yes |
 | Code | **Byte-identical** to `label_update_3improvements` (`model.py`, `labeling.py`, `core.py`, `theta.json`, `ridge.npz`, `name_date_prior.json`). Only `shift_priors.json` differs. |
 | Settings | **sigma_delta = 0.912** (2 × 0.456), sigma_zeta = 1.110, sigma_item = 0.975, item shifts on, averaging on, date rule on |
-| Codabench result | Not known at the time of writing (Codabench was down). |
+| Codabench result | Brier ALC **0.2145** (uploaded 26 Oct). One upload is scored on only about 8 random pairs, so single scores are noisy (see ../README.md). |
 | Local 5-fold result | Brier ALC **0.2214** (best submission that is already built) |
-| Status | **The zip to upload now.** A slightly better candidate (stretch 1 ridge, 0.2196) has been found but not yet built as a zip. See below. |
+| Status | **Backup final submission.** The stretch 1 version was built later as `label_update_stretch1_tuned` (0.2196, the recommended final). |
 
 ---
 
@@ -65,7 +65,7 @@ All checks passed, and the simulation of this exact zip reproduced 0.2214. No ne
 | `label_update_3improvements` | 0.2525 | 0.2403 | 0.2271 | 0.2151 | 0.2059 | 0.1996 | 0.2227 |
 | **`label_update_3improvements_tuned`** | 0.2517 | 0.2382 | 0.2247 | 0.2144 | 0.2051 | 0.1994 | **0.2214** |
 
-## 5. Same method on the other ridges (found later, not built as zips)
+## 5. Same method on the other ridges (found later; stretch 1 is now built as `label_update_stretch1_tuned`)
 
 We later ran the same method and settings on the two stretched ridges (test builds `sim_stretch1`, `sim_stretch2`; results in `analysis/simulate_alc_sim_stretch*.csv`):
 

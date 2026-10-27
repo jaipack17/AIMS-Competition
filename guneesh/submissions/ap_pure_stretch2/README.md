@@ -7,7 +7,7 @@
 | Zip | `ap_pure_stretch2.zip` (the same files are unpacked in `files/`) |
 | Uses labels? | No |
 | Code | Byte-identical to `ap_pure`. It adds the file `bhat_stretch.json`, which `core.py` applies whenever the file is present. |
-| Codabench result | Uploaded. The result was still pending when this README was written (Codabench was down). |
+| Codabench result | Brier ALC **0.2457** (uploaded 26 Oct). One upload is scored on only about 8 random pairs, so single scores are noisy (see ../README.md). |
 | Local 5-fold result | Brier ALC **0.2639** (worse than `ap_pure`, 0.2588) |
 | Status | Experiment. Worse. Do not use. |
 

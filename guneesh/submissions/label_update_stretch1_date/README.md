@@ -7,7 +7,7 @@
 | Zip | `label_update_stretch1_date.zip` (files unpacked in `files/`) |
 | Uses labels? | Yes |
 | Code | Same `model.py` and `labeling.py` as `label_update`; same `core.py` as `label_update_date`. |
-| Codabench result | Not uploaded. |
+| Codabench result | Brier ALC **0.1649** (uploaded 26 Oct). One upload is scored on only about 8 random pairs, so single scores are noisy (see ../README.md). |
 | Local 5-fold result | Brier ALC **0.2254** |
 | Status | Experiment. Not better. |
 

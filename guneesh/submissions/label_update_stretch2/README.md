@@ -7,7 +7,7 @@
 | Zip | `label_update_stretch2.zip` (files unpacked in `files/`) |
 | Uses labels? | Yes |
 | Code | Byte-identical to `label_update`. It adds `bhat_stretch.json`, which `core.py` applies whenever the file is present. |
-| Codabench result | Uploaded. Still pending when this README was written (Codabench was down). |
+| Codabench result | Uploaded on 22 Oct; no result was recorded. One upload is scored on only about 8 random pairs, so single scores are noisy (see ../README.md). |
 | Local 5-fold result | Brier ALC **0.2275** (worse than `label_update`, 0.2246) |
 | Status | Experiment. Worse. Do not use. |
 

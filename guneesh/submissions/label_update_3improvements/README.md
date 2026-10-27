@@ -8,7 +8,7 @@
 | Uses labels? | Yes |
 | Code | The **current** code: `submission_src/label_update/model.py` (v2) and `submission_src/common/core.py`. |
 | Settings | sigma_delta = 0.456, sigma_zeta = 1.110, **sigma_item = 0.975** (0.6 × measured 1.624), item shifts on, averaging on, date rule on |
-| Codabench result | Not known at the time of writing. |
+| Codabench result | Brier ALC **0.2099** (uploaded 26 Oct). One upload is scored on only about 8 random pairs, so single scores are noisy (see ../README.md). |
 | Local 5-fold result | Brier ALC **0.2227** (vs 0.2246 for `label_update`) |
 | Status | Replaced by `label_update_3improvements_tuned` (same code, better sigma_delta). |
 

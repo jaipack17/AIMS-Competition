@@ -7,7 +7,7 @@
 | Zip | `label_update_date.zip` (files unpacked in `files/`) |
 | Uses labels? | Yes |
 | Code | `model.py` and `labeling.py` are the same as `label_update`. `core.py` is a newer version that reads `name_date_prior.json`. |
-| Codabench result | Not uploaded. |
+| Codabench result | Brier ALC **0.1948** (uploaded 26 Oct). One upload is scored on only about 8 random pairs, so single scores are noisy (see ../README.md). |
 | Local 5-fold result | Brier ALC **0.2249** (vs 0.2246 for `label_update`; the difference is noise) |
 | Status | Experiment, built before averaging and item shifts existed. Its date rule lives on inside `label_update_3improvements`. |
 
