@@ -1,0 +1,48 @@
+{
+ "run": "versionB_4parts_logitnormal",
+ "source": "data/mlp_b",
+ "center": 0.014619383029639721,
+ "k": 0.6488751173019409,
+ "between_benchmark_slope": 0.14515210688114166,
+ "sigma_delta_stretched": 0.5101177096366882,
+ "fold_centers": {
+  "0": 0.024304641410708427,
+  "1": 0.010267236270010471,
+  "2": 0.012505906634032726,
+  "3": 9.67579399002716e-05,
+  "4": 0.01886817440390587
+ },
+ "n_items": 255286,
+ "held_out_checks": [
+  {
+   "fold": 0,
+   "k_from_other_folds": 0.6173252463340759,
+   "within_mse_k1": 2.839935302734375,
+   "within_mse_k": 2.8388173580169678
+  },
+  {
+   "fold": 1,
+   "k_from_other_folds": 0.6161124110221863,
+   "within_mse_k1": 2.4710097312927246,
+   "within_mse_k": 2.4706153869628906
+  },
+  {
+   "fold": 2,
+   "k_from_other_folds": 0.636102020740509,
+   "within_mse_k1": 3.728288173675537,
+   "within_mse_k": 3.7313685417175293
+  },
+  {
+   "fold": 3,
+   "k_from_other_folds": 0.5545695424079895,
+   "within_mse_k1": 2.916985273361206,
+   "within_mse_k": 2.9638988971710205
+  },
+  {
+   "fold": 4,
+   "k_from_other_folds": 0.909831166267395,
+   "within_mse_k1": 1.9822689294815063,
+   "within_mse_k": 1.9550683498382568
+  }
+ ]
+}

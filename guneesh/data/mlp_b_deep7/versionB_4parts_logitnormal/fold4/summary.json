@@ -1,0 +1,85 @@
+{
+ "run": "versionB_4parts_logitnormal",
+ "fit": "fold4",
+ "designs": {
+  "deep7": [
+   1024,
+   512,
+   256,
+   256,
+   128,
+   64,
+   32
+  ]
+ },
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "regularisation": {
+  "input_noise_sd": 0.1,
+  "input_dropout": 0.2,
+  "dropout": 0.5,
+  "lr": 0.0001,
+  "weight_decay": 0.05,
+  "batch": 512,
+  "patience": 6,
+  "grad_clip": 1.0
+ },
+ "nets": [
+  {
+   "hidden": [
+    1024,
+    512,
+    256,
+    256,
+    128,
+    64,
+    32
+   ],
+   "seed": 0,
+   "epochs": 11,
+   "best_epoch": 5,
+   "sel_within_r": 0.19772378751867994
+  },
+  {
+   "hidden": [
+    1024,
+    512,
+    256,
+    256,
+    128,
+    64,
+    32
+   ],
+   "seed": 1,
+   "epochs": 9,
+   "best_epoch": 3,
+   "sel_within_r": 0.20247304704671587
+  },
+  {
+   "hidden": [
+    1024,
+    512,
+    256,
+    256,
+    128,
+    64,
+    32
+   ],
+   "seed": 2,
+   "epochs": 9,
+   "best_epoch": 3,
+   "sel_within_r": 0.19848260778819288
+  }
+ ],
+ "ensemble_sel_within_r": 0.20469391501734133,
+ "heldout_vs_final_b": {
+  "n_items": 76720,
+  "pearson_all": 0.06633185272789821,
+  "pearson_within_benchmark_mean": 0.10035564421425001,
+  "rmse": 1.632839322090149
+ },
+ "minutes": 603.1857644836108
+}

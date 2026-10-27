@@ -1,0 +1,95 @@
+{
+ "run": "versionB_4parts_logitnormal",
+ "fit": "fold0",
+ "designs": {
+  "h64": [
+   64
+  ],
+  "h256x2": [
+   256,
+   256
+  ]
+ },
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "regularisation": {
+  "input_noise_sd": 0.1,
+  "input_dropout": 0.2,
+  "dropout": 0.5,
+  "lr": 0.0001,
+  "weight_decay": 0.05,
+  "batch": 512,
+  "patience": 6,
+  "grad_clip": 1.0
+ },
+ "nets": [
+  {
+   "hidden": [
+    64
+   ],
+   "seed": 0,
+   "epochs": 13,
+   "best_epoch": 7,
+   "sel_within_r": 0.1976345624159993
+  },
+  {
+   "hidden": [
+    64
+   ],
+   "seed": 1,
+   "epochs": 20,
+   "best_epoch": 14,
+   "sel_within_r": 0.19331083138523522
+  },
+  {
+   "hidden": [
+    64
+   ],
+   "seed": 2,
+   "epochs": 20,
+   "best_epoch": 14,
+   "sel_within_r": 0.1979152636403842
+  },
+  {
+   "hidden": [
+    256,
+    256
+   ],
+   "seed": 0,
+   "epochs": 23,
+   "best_epoch": 17,
+   "sel_within_r": 0.2041518955853313
+  },
+  {
+   "hidden": [
+    256,
+    256
+   ],
+   "seed": 1,
+   "epochs": 26,
+   "best_epoch": 20,
+   "sel_within_r": 0.17770223907438626
+  },
+  {
+   "hidden": [
+    256,
+    256
+   ],
+   "seed": 2,
+   "epochs": 32,
+   "best_epoch": 26,
+   "sel_within_r": 0.1901209673541959
+  }
+ ],
+ "ensemble_sel_within_r": 0.20237869450157844,
+ "heldout_vs_final_b": {
+  "n_items": 58941,
+  "pearson_all": 0.13555590341460586,
+  "pearson_within_benchmark_mean": NaN,
+  "rmse": 1.7160370349884033
+ },
+ "minutes": 55.527412660916646
+}
