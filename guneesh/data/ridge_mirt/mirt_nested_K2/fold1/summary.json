@@ -1,0 +1,33 @@
+{
+ "run": "mirt_nested_K2",
+ "fit": "fold1",
+ "score": "r2",
+ "targets": {
+  "b": {
+   "alpha": 10000000.0,
+   "alpha_on_grid_edge": false,
+   "cv_score": 0.00398985709479085,
+   "train_pearson": 0.17802214178020792,
+   "heldout_vs_final_1d_b": {
+    "n_items": 45490,
+    "pearson_all": 0.11241463294415029,
+    "pearson_within_benchmark_mean": 0.15854159764271597,
+    "rmse": 1.6044675724743347
+   }
+  },
+  "v1": {
+   "alpha": 1000000000000.0,
+   "alpha_on_grid_edge": true,
+   "cv_score": -4.0091363503336196e-05,
+   "train_pearson": 0.03949579888356028
+  },
+  "v2": {
+   "alpha": 1000000000000.0,
+   "alpha_on_grid_edge": true,
+   "cv_score": -3.187121642644897e-05,
+   "train_pearson": 0.04137810122428548
+  }
+ },
+ "n_train_items": 209796,
+ "minutes": 19.97
+}

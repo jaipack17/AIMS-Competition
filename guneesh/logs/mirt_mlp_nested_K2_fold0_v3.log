@@ -1,0 +1,24 @@
+mirt_nested_K2 fold0: 167,733 train items (74 benchmarks); validation 15,682 items (9 benchmarks) for early stopping, 12,930 items (9 benchmarks) for the reported scores; targets ['b', 'v1', 'v2'] (29 s)
+ridge done (4.7 min); alphas b 1e+07, v1 1e+09, v2 1e+12
+mlp_256x2 seed 0: stopped after 7 epochs, best epoch 1; early-stopping weight MSE 1.2923 (untrained) -> 1.0508 (9.0 min)
+mlp_256x2 seed 1: stopped after 7 epochs, best epoch 1; early-stopping weight MSE 1.3890 (untrained) -> 1.0519 (12.3 min)
+mlp_256x2 seed 2: stopped after 8 epochs, best epoch 2; early-stopping weight MSE 1.4761 (untrained) -> 1.0528 (15.9 min)
+mlp_256x2_bench_balanced seed 0: stopped after 7 epochs, best epoch 1; early-stopping weight MSE 1.2923 (untrained) -> 1.0625 (19.9 min)
+mlp_256x2_bench_balanced seed 1: stopped after 8 epochs, best epoch 2; early-stopping weight MSE 1.3890 (untrained) -> 1.0644 (24.8 min)
+mlp_256x2_bench_balanced seed 2: stopped after 12 epochs, best epoch 6; early-stopping weight MSE 1.4761 (untrained) -> 1.0679 (32.2 min)
+mlp_64x1 seed 0: stopped after 7 epochs, best epoch 1; early-stopping weight MSE 1.2810 (untrained) -> 1.0503 (34.9 min)
+mlp_64x1 seed 1: stopped after 7 epochs, best epoch 1; early-stopping weight MSE 1.1667 (untrained) -> 1.0623 (37.6 min)
+mlp_64x1 seed 2: stopped after 7 epochs, best epoch 1; early-stopping weight MSE 1.1631 (untrained) -> 1.0601 (40.3 min)
+
+reported validation benchmarks (never used for training or early stopping):
+target                                  b      v1      v2
+R2_mean                           -0.0000 -0.0001 -0.0000
+R2_ridge                           0.0002 -0.0000 -0.0000
+within_r_ridge                     0.0988  0.0709 -0.0390
+R2_mlp_256x2                      -0.2108 -0.0192 -0.0195
+within_r_mlp_256x2                 0.1435  0.0007  0.0131
+R2_mlp_256x2_bench_balanced       -1.5523 -0.0378 -0.0928
+within_r_mlp_256x2_bench_balanced  0.1082  0.0498  0.0104
+R2_mlp_64x1                       -0.2287 -0.0294 -0.0265
+within_r_mlp_64x1                  0.1821  0.0088 -0.0427
+saved C:\Users\Guneesh Gupta\AIMS_project\analysis\mirt_mlp_check_mirt_nested_K2_fold0.csv (40.3 min)

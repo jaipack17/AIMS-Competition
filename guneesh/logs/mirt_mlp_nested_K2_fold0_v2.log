@@ -1,0 +1,1 @@
+mirt_nested_K2 fold0: 167,733 train items (74 benchmarks); validation 15,682 items (9 benchmarks) for early stopping, 12,930 items (9 benchmarks) for the reported scores; targets ['b', 'v1', 'v2'] (29 s)

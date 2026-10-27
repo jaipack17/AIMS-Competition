@@ -1,0 +1,19 @@
+mirt_nested_K2 fold0: 167,733 train items (74 benchmarks), 28,612 validation items (18 benchmarks), targets ['b', 'v1', 'v2'] (20 s)
+ridge done (3.0 min); alphas b 1e+07, v1 1e+09, v2 1e+12
+epoch 0: validation MSE (standardised) 0.8025
+C:\Users\Guneesh Gupta\AIMS_project\analysis\mirt_mlp_check.py:159: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\torch\csrc\autograd\generated\python_variable_methods.cpp:837.)
+  print(f"epoch {ep}: train batch MSE {float(loss):.4f}, validation MSE {v:.4f} (best {best:.4f}) "
+epoch 1: train batch MSE 1.0005, validation MSE 0.8163 (best 0.8025) 3.1 min
+epoch 2: train batch MSE 0.9154, validation MSE 0.8097 (best 0.8025) 3.2 min
+epoch 3: train batch MSE 0.8419, validation MSE 0.8475 (best 0.8025) 3.3 min
+epoch 4: train batch MSE 0.9050, validation MSE 0.8430 (best 0.8025) 3.4 min
+epoch 5: train batch MSE 0.9672, validation MSE 0.8855 (best 0.8025) 3.5 min
+epoch 6: train batch MSE 0.9139, validation MSE 0.9010 (best 0.8025) 3.6 min
+
+validation benchmarks (never seen by ridge or MLP):
+target  R2_mean  R2_ridge  R2_mlp  within_r_ridge  within_r_mlp
+     b  -0.0003   -0.0024 -0.0105          0.1113       -0.0181
+    v1  -0.0000   -0.0001 -0.0159          0.0070       -0.0343
+    v2  -0.0000   -0.0000 -0.0020          0.0009       -0.0108
+saved C:\Users\Guneesh Gupta\AIMS_project\analysis\mirt_mlp_check_mirt_nested_K2_fold0.csv (3.6 min)

@@ -1,0 +1,11 @@
+embeddings (255286, 4096) (35 s)
+[fold0] sums + CV for 15 targets of 4 runs in 21.8 min
+[mirt_nested_K1 fold0] b: alpha 1e+07 cv 0.004  v1: alpha 1e+08 cv -0.000  | b held-out within-bench r 0.115
+[mirt_nested_K2 fold0] b: alpha 1e+07 cv 0.004  v1: alpha 1e+12 cv -0.000  v2: alpha 1e+08 cv -0.000  | b held-out within-bench r 0.113
+[mirt_nested_K3 fold0] b: alpha 1e+07 cv 0.004  v1: alpha 1e+08 cv 0.000  v2: alpha 1e+08 cv 0.000  v3: alpha 1e+08 cv 0.000  | b held-out within-bench r 0.121
+[mirt_nested_K5 fold0] b: alpha 1e+07 cv 0.004  v1: alpha 1e+12 cv -0.000  v2: alpha 1e+08 cv 0.000  v3: alpha 1e+09 cv -0.000  v4: alpha 1e+12 cv -0.000  v5: alpha 1e+08 cv -0.000  | b held-out within-bench r 0.114
+[fold1] sums + CV for 15 targets of 4 runs in 19.2 min
+[mirt_nested_K1 fold1] b: alpha 1e+07 cv 0.004  v1: alpha 1e+12 cv -0.000  | b held-out within-bench r 0.159
+[mirt_nested_K2 fold1] b: alpha 1e+07 cv 0.004  v1: alpha 1e+12 cv -0.000  v2: alpha 1e+12 cv -0.000  | b held-out within-bench r 0.159
+[mirt_nested_K3 fold1] b: alpha 1e+07 cv 0.004  v1: alpha 1e+12 cv -0.000  v2: alpha 1e+12 cv -0.000  v3: alpha 1e+08 cv -0.000  | b held-out within-bench r 0.162
+[mirt_nested_K5 fold1] b: alpha 1e+07 cv 0.004  v1: alpha 1e+08 cv -0.000  v2: alpha 1e+08 cv 0.000  v3: alpha 1e+09 cv -0.000  v4: alpha 1e+08 cv -0.000  v5: alpha 1e+12 cv -0.000  | b held-out within-bench r 0.165
