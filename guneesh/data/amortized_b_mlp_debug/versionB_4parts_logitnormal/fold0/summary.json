@@ -1,0 +1,39 @@
+{
+ "run": "versionB_4parts_logitnormal",
+ "fit": "fold0",
+ "head": "mlp",
+ "runs": [
+  {
+   "seed": 0,
+   "l2": 0.0,
+   "epochs": 6,
+   "best_epoch": 1,
+   "sel_ll_start": -0.6043699836245906,
+   "sel_ll": -0.5978111752216622
+  },
+  {
+   "seed": 1,
+   "l2": 0.0,
+   "epochs": 16,
+   "best_epoch": 11,
+   "sel_ll_start": -0.5983965445784029,
+   "sel_ll": -0.5952956406395284
+  },
+  {
+   "seed": 2,
+   "l2": 0.0,
+   "epochs": 8,
+   "best_epoch": 3,
+   "sel_ll_start": -0.6038342319349368,
+   "sel_ll": -0.5987852987659829
+  }
+ ],
+ "sel_within_r_vs_fit_b": 0.0026853263554352386,
+ "heldout_vs_final_b": {
+  "n_items": 3088,
+  "pearson_all": 0.4266846797901337,
+  "pearson_within_benchmark_mean": 0.4266846797901337,
+  "rmse": 1.6618865886757455
+ },
+ "minutes": 1.2777502338091533
+}

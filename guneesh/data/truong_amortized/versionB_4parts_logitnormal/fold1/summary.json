@@ -1,0 +1,26 @@
+{
+ "run": "versionB_4parts_logitnormal",
+ "fit": "fold1",
+ "iterations": 10000,
+ "final_loss": 1427.78662109375,
+ "affine_to_versionB_b": {
+  "c0": -0.8773263555023871,
+  "c1": 0.16226958409939093
+ },
+ "heldout_vs_final_b": {
+  "n_items": 45490,
+  "pearson_all": 0.08663262481689016,
+  "pearson_within_benchmark_mean": 0.10915776530703417,
+  "rmse": 1.6191242740428957
+ },
+ "config": {
+  "fits": "fold1",
+  "max_epoch": 10000,
+  "seed": 42,
+  "device": "cuda",
+  "threads": 6,
+  "debug_benchmarks": 0,
+  "out_dir": "/out/truong_amortized"
+ },
+ "minutes": 11.01571694612503
+}
