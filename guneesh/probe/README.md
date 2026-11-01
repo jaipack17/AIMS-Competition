@@ -8,6 +8,7 @@ final-layer "difficulty heads") and difference-of-means probes, plus a logit-len
 | File | What it does |
 |---|---|
 | `extract_activations.py` | Step 1 (GPU). Runs the model on a sample of items and saves hidden states (alternate layers by default) at 3 token positions, the logit-lens readout and a parity check. Full description in its docstring. |
+| `analyze_probes.py` | Step 2 (CPU). Probe sweep over keys × layers (diff-of-means, ridge), logit-lens rating, length baseline, direction cosines; leave-one-fold-out by benchmark. |
 | `acts_io.py` | Loads the saved files (`load_layer`, `load_all_layers`, `load_lens`, `consolidate`). |
 | `run_extract.sh` | Starts the extraction with `nohup` so it survives a dropped SSH connection. |
 | `requirements.txt` | Python packages for the GPU machine. |
@@ -95,6 +96,31 @@ Check:
 
 **Copying results back:** `rsync -avP user@server:AIMS-Competition/guneesh/probe/acts/pilot/ probe/acts/pilot/`.
 `probe/acts/` and `probe/logs/` are large outputs and are not meant to be committed.
+
+## Step 2: analyse (CPU, after the pilot)
+
+```bash
+python probe/analyze_probes.py probe/acts/pilot_l5        # on the server (no GPU needed) or locally after rsync
+# options: --keys ap__last,rate__last  --layers 20,36  --methods dom,ridge,ridge_wc  --out <folder>
+```
+
+`analyze_probes.py` (docstring has the details) does leave-one-fold-out over the project's benchmark folds and,
+for every saved key × layer, fits a difference-of-means probe (`dom`), a ridge (`ridge`, as `ridge_train.py`) and a
+ridge on benchmark-centred data (`ridge_wc`). It scores each with the held-out within-benchmark r (bootstrap 95%
+interval, per fold, partial r after removing token length, and paired difference vs the reference = ridge on
+`ap__last` at the last layer trained on the same items). It also reports, with no training: the logit-lens rating
+r per prompt and layer plus the digit mass, the length baseline, and whether per-benchmark difficulty directions
+are shared (mean pairwise cosine vs b shuffled). Results go to `probe/results/<run>/`: `probe_sweep.csv`,
+`per_benchmark.csv`, `lens.csv`, `direction_cosine.csv`, `layer_curves.png`.
+
+How to read it: a layer/key/prompt is worth a full run only if `d_vs_ref` has `d_ci_lo > 0` (it beats the
+existing vector on unseen benchmarks), `partial_r_len` stays close to `within_r` (it is not just length), and
+`mean_cos` is clearly above `mean_cos_shuffled` (a shared difficulty axis exists). With 30 benchmarks the intervals
+are wide; differences under ~0.03 are noise.
+
+Tested on a fake run with a planted difficulty direction (15 benchmarks, hidden 512): the planted layer, position
+and logit-lens rating come out on top (r 0.35–0.51), and keys and layers with nothing planted come out at ≈ 0.
+Expected time on the real pilot (5 layers, 4 keys, hidden 4096): about 10–20 min on one CPU.
 
 ## Tested
 
