@@ -2,14 +2,14 @@
 
 Hidden states are stored as uint16 arrays holding the raw bfloat16 bits (lossless); bf16_to_f32 decodes them.
 Array names in each <benchmark>.npz:
-  item, b, parity_maxabs, skipped
-  <prompt>__last, <prompt>__item_last, <prompt>__item_mean   (n, n_layers, hidden) uint16 (item_* for the first prompt)
+  item, b, parity_maxabs, skipped, layers (the layer numbers stored in the hidden-state arrays)
+  <prompt>__last, <prompt>__item_last, <prompt>__item_mean   (n, n_saved_layers, hidden) uint16 (item_* for the first prompt)
   <prompt>__digit_probs (n, n_layers, 10), __digit_mass (n, n_layers), __entropy (n, n_layers),
   <prompt>__top5_ids (n, 5), __top5_probs (n, 5), __n_tokens (n,), __truncated (n,)
 
 Example:
   from acts_io import load_layer, load_lens
-  X, meta = load_layer("probe/acts/pilot", "ap__last", layer=20)       # X (n, 4096) float32, meta: item, b, benchmark
+  X, meta = load_layer("probe/acts/pilot", "ap__last", layer=20)       # real layer number (must be a saved one)
   L, meta = load_lens("probe/acts/pilot", "rate__digit_probs")          # (n, n_layers, 10)
 """
 from __future__ import annotations
@@ -37,20 +37,36 @@ def _meta(z, path: Path) -> pd.DataFrame:
     return pd.DataFrame({"item": z["item"].astype(str), "b": z["b"], "benchmark": path.stem})
 
 
+def saved_layers(run_dir) -> list[int]:
+    """Layer numbers stored in the hidden-state arrays, in order."""
+    cfg = config(run_dir)
+    return cfg.get("layers_saved") or list(range(cfg["n_layer_outputs"]))
+
+
+def _slot(z, layer: int) -> int:
+    layers = list(z["layers"]) if "layers" in z.files else None
+    if layers is None:
+        return layer
+    if layer not in layers:
+        raise KeyError(f"layer {layer} was not saved; saved layers: {layers}")
+    return layers.index(layer)
+
+
 def load_layer(run_dir, key: str, layer: int, benchmarks=None):
-    """Hidden states of one key (e.g. "ap__last") at one layer, for all (or the given) benchmarks."""
+    """Hidden states of one key (e.g. "ap__last") at one layer (real layer number), for all (or given) benchmarks."""
     Xs, metas = [], []
     for p in benchmark_files(run_dir):
         if benchmarks is not None and p.stem not in benchmarks:
             continue
         with np.load(p) as z:
-            Xs.append(bf16_to_f32(z[key][:, layer, :]))
+            Xs.append(bf16_to_f32(z[key][:, _slot(z, layer), :]))
             metas.append(_meta(z, p))
     return np.concatenate(Xs), pd.concat(metas, ignore_index=True)
 
 
 def load_all_layers(run_dir, key: str, benchmarks=None):
-    """All layers of one key: (n, n_layers, hidden) float32. Pilot-sized runs only (memory)."""
+    """All saved layers of one key: (n, n_saved_layers, hidden) float32, in the order of saved_layers().
+    Pilot-sized runs only (memory)."""
     Xs, metas = [], []
     for p in benchmark_files(run_dir):
         if benchmarks is not None and p.stem not in benchmarks:
@@ -74,7 +90,7 @@ def load_lens(run_dir, key: str, benchmarks=None):
 
 
 def consolidate(run_dir, key: str, out_path=None) -> Path:
-    """Write one (n, n_layers, hidden) uint16 .npy for `key` that can be memory-mapped (for the full run, where
+    """Write one (n, n_saved_layers, hidden) uint16 .npy for `key` that can be memory-mapped (for the full run, where
     loading every benchmark once per layer is slow). Also writes <key>_index.parquet with item, b, benchmark."""
     files = benchmark_files(run_dir)
     shapes = []
@@ -97,4 +113,5 @@ def consolidate(run_dir, key: str, out_path=None) -> Path:
 
 def load_consolidated_layer(run_dir, key: str, layer: int):
     mm = np.load(Path(run_dir) / f"{key}.npy", mmap_mode="r")
-    return bf16_to_f32(mm[:, layer, :]), pd.read_parquet(Path(run_dir) / f"{key}_index.parquet")
+    slot = saved_layers(run_dir).index(layer)
+    return bf16_to_f32(mm[:, slot, :]), pd.read_parquet(Path(run_dir) / f"{key}_index.parquet")

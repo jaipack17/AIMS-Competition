@@ -7,7 +7,7 @@ final-layer "difficulty heads") and difference-of-means probes, plus a logit-len
 
 | File | What it does |
 |---|---|
-| `extract_activations.py` | Step 1 (GPU). Runs the model on a sample of items and saves hidden states of all 37 layers at 3 token positions, the logit-lens readout and a parity check. Full description in its docstring. |
+| `extract_activations.py` | Step 1 (GPU). Runs the model on a sample of items and saves hidden states (alternate layers by default) at 3 token positions, the logit-lens readout and a parity check. Full description in its docstring. |
 | `acts_io.py` | Loads the saved files (`load_layer`, `load_all_layers`, `load_lens`, `consolidate`). |
 | `run_extract.sh` | Starts the extraction with `nohup` so it survives a dropped SSH connection. |
 | `requirements.txt` | Python packages for the GPU machine. |
@@ -23,15 +23,27 @@ final-layer "difficulty heads") and difference-of-means probes, plus a logit-len
 * **Positions:** `last` (last token, every prompt); `item_last` and `item_mean` (last token / mean of the item
   text, before the instruction). Because the model is causal, the item positions are identical under every prompt
   (checked: difference 0.0), so they are the "no prompt" state and are saved once, from `ap`.
-* **Layers:** all 37 outputs. Index 0 = token embeddings, 36 = last layer after the final norm (the vector of the
-  existing embeddings; the run checks `ap` layer 36 against `data/emb/qwen3vl8b/` and logs the difference).
-* **Logit lens** at `last`, every layer: P(digit 0–9), total digit mass, entropy; the last layer's top-5 tokens.
+* **Layers** (`--layers`): default `even` = 0, 2, …, 36 (19 of the 37 outputs). Also `all`, `every:4`, or a list
+  such as `0,12,20,24,28,32,36`. Index 0 = token embeddings, 36 = last layer after the final norm (the vector of
+  the existing embeddings; it is always saved, and the run checks it against `data/emb/qwen3vl8b/`).
+  `acts_io.load_layer(..., layer=20)` takes the real layer number.
+* **Logit lens** at `last`, on **every** layer whatever `--layers` says (it is tiny): P(digit 0–9), total digit
+  mass, entropy; the last layer's top-5 tokens.
 * **Sample:** `--mode pilot` = 6 benchmarks per fold (30) × 100 items; `--mode full` = all 115 × 300.
   Pilot items are a subset of the full-run items. Target = b of the final IRT fit; the fold of each benchmark is
   stored so the analysis can hold benchmarks out exactly as in the rest of the project.
 
-Expected size and time on one A100/H100 (3 prompts, about 0.2 s per forward pass): pilot ≈ 3,000 items,
-**≈ 4.5 GB, ≈ 1 h**; full ≈ 34,500 items, **≈ 52 GB, ≈ 6–8 h**.
+Size (3 prompts = 5 saved vectors per item and layer, 8 KB each) and time on one A100/H100 (about 0.2 s per
+forward pass; `--layers` does not change the time):
+
+| `--layers` | layers | per item | pilot (≈ 3,000 items, ≈ 1 h) | full (≈ 34,500 items, ≈ 6–8 h) |
+|---|---|---|---|---|
+| `all` | 37 | 1.5 MB | 4.5 GB | 52 GB |
+| **`even` (default)** | 19 | 0.78 MB | **2.3 GB** | **27 GB** |
+| `every:4` | 10 | 0.41 MB | 1.2 GB | 14 GB |
+
+Suggested: run the pilot with `even`, then run the full set only for the layers and prompts that win in the
+pilot (for example `--layers 16,20,24,28,36 --prompts ap,rate`: about 7 GB).
 
 ## Running it on a GPU machine over SSH
 
@@ -43,14 +55,18 @@ git clone -b Guneesh https://github.com/jaipack17/AIMS-Competition.git && cd AIM
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r probe/requirements.txt
 
-# 2. data: IRT difficulties + the existing embeddings (for the parity check) from Hugging Face (public)
+# 2. data: IRT difficulties + the existing embeddings (for the parity check) from Hugging Face (public).
+#    One --include per pattern (with several patterns after one --include, the hf CLI ignores the filter).
+#    data/irt/folds.csv is already in git.
 hf download GunGG4/paiec-Qwen8Binstruct-guneesh-data --repo-type dataset --local-dir data \
-    --include "irt/folds.csv" "irt/versionB_4parts_logitnormal/final/*" "emb/qwen3vl8b/*"
+    --include "irt/versionB_4parts_logitnormal/final/*" --include "emb/qwen3vl8b/*"
+ls data/irt/versionB_4parts_logitnormal/final/items.parquet     # must exist
 #    the item texts (data/measurement-db/<benchmark>/formatted_tables/items.parquet) are downloaded
 #    automatically for the sampled benchmarks; --no_fetch turns that off
 
-# 3. model cache somewhere with ~20 GB free (the first run downloads Qwen3-VL-8B-Instruct)
-export HF_HOME=/path/with/space/hf_cache
+# 3. model cache in a folder you can write to with ~20 GB free (the first run downloads Qwen3-VL-8B-Instruct)
+export HF_HOME=~/hf_cache            # a real path; check free space with  df -h ~
+echo 'export HF_HOME=~/hf_cache' >> ~/.bashrc
 
 # 4. check prompts and token positions without the GPU (tokenizer only)
 python probe/extract_activations.py --dry_run

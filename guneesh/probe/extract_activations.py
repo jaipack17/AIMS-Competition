@@ -2,14 +2,15 @@
 
 For a sample of items of each binary training benchmark, the text model is run once per prompt and this is saved:
 
-  hidden states   all 37 layer outputs (index 0 = token embeddings, 36 = last layer after the final RMSNorm,
-                  i.e. exactly the vector of the existing embeddings in data/emb/qwen3vl8b/), at the positions
+  hidden states   the layers chosen with --layers (default "even": 0, 2, ..., 36 = 19 of the 37 layer outputs;
+                  index 0 = token embeddings, 36 = last layer after the final RMSNorm, i.e. exactly the vector of
+                  the existing embeddings in data/emb/qwen3vl8b/; the last layer is always saved), at the positions
                     last       last token of the whole text                       (every prompt)
                     item_last  last token of the item text, before any instruction (prompt "ap" only)
                     item_mean  mean over the item's tokens                         (prompt "ap" only)
                   The model is causal and every prompt starts with the same "Task statement:\\n<item>", so the two
                   item positions do not see the instruction: they are the "no prompt" state and are saved once.
-  logit lens      at the "last" position of every layer, lm_head(final_norm(h_l)):
+  logit lens      at the "last" position of every layer (all 37, whatever --layers says), lm_head(final_norm(h_l)):
                     probabilities of the digit tokens 0-9, their total mass, entropy of the full next-token
                     distribution; plus the last layer's top-5 next tokens (what the model would actually write).
   parity          max |ap layer-36 last-token state - stored embedding| per item (should be ~0).
@@ -182,8 +183,24 @@ def digit_token_ids(tok) -> list[int]:
     return out
 
 
+def parse_layers(spec: str, n_layers: int) -> list[int]:
+    """'all', 'even' (0, 2, ..., last), 'every:K' or a comma list. The last layer is always included (parity)."""
+    last = n_layers - 1
+    if spec == "all":
+        sel = range(n_layers)
+    elif spec == "even":
+        sel = range(0, n_layers, 2)
+    elif spec.startswith("every:"):
+        sel = range(0, n_layers, int(spec.split(":")[1]))
+    else:
+        sel = [int(x) for x in spec.split(",")]
+    sel = sorted(set(int(i) % n_layers for i in sel) | {last})
+    return sel
+
+
 def run_one(state, ids: list[int], item_idx: np.ndarray, want_item: bool, digit_ids):
-    """One forward pass. Returns hidden states at the positions (bf16 bits) and the logit-lens readout."""
+    """One forward pass. Returns hidden states of the saved layers at the positions (bf16 bits) and the
+    logit-lens readout (computed on every layer, it is small)."""
     torch = state["torch"]
     text_model, dev = state["text_model"], state["embed_device"]
     x = torch.tensor([ids], device=dev)
@@ -194,15 +211,18 @@ def run_one(state, ids: list[int], item_idx: np.ndarray, want_item: bool, digit_
         if state.get("last_is_normed") is None:  # checked once: is the last entry the final-normed state?
             state["last_is_normed"] = bool(torch.equal(hs[-1], out.last_hidden_state))
             print(f"hidden_states[-1] == last_hidden_state (already normed): {state['last_is_normed']}", flush=True)
-        res = {"last": torch.stack([h[0, -1] for h in hs])}  # (L, H) bf16
+        sel = state["layers"]
+        all_last = torch.stack([h[0, -1] for h in hs])  # (L, H) bf16, every layer (for the lens)
+        res = {"last": all_last[sel]}
         if want_item:
             j = torch.as_tensor(item_idx, device=hs[0].device)
-            res["item_last"] = torch.stack([h[0, int(item_idx[-1])] for h in hs])
-            res["item_mean"] = torch.stack([h[0].index_select(0, j.to(h.device)).float().mean(0) for h in hs]).to(hs[0].dtype)
+            res["item_last"] = torch.stack([hs[i][0, int(item_idx[-1])] for i in sel])
+            res["item_mean"] = torch.stack([hs[i][0].index_select(0, j.to(hs[i].device)).float().mean(0)
+                                            for i in sel]).to(hs[0].dtype)
         del out, hs
 
         # logit lens at the last position: final norm on every layer except the last one if it is already normed
-        h = res["last"].to(state["lm_head"].weight.device)
+        h = all_last.to(state["lm_head"].weight.device)
         k = h.shape[0] - 1 if state["last_is_normed"] else h.shape[0]
         normed = state["norm"](h[:k].to(state["norm"].weight.device)).to(h.device)
         z = torch.cat([normed, h[k:]], 0)
@@ -248,6 +268,9 @@ def main():
     pa.add_argument("--prompts", default="ap,rate,solve", help=f"comma-separated, first one also saves the item "
                     f"positions; available: {','.join(PROMPTS)}")
     pa.add_argument("--n_items", type=int, default=0, help="items per benchmark (default: 100 pilot, 300 full)")
+    pa.add_argument("--layers", default="even", help="hidden-state layers to save: even (0,2,...,36; default), all, "
+                    "every:K, or a list like 0,12,20,28,36; the last layer is always added; the logit lens always "
+                    "covers every layer")
     pa.add_argument("--benchmarks", default="", help="comma-separated subset (overrides the mode's choice)")
     pa.add_argument("--seed", type=int, default=0)
     pa.add_argument("--data_dir", default=str(ROOT / "data"))
@@ -300,22 +323,25 @@ def main():
     digit_ids = digit_token_ids(tok)
     n_layers = int(getattr(state["text_model"].config, "num_hidden_layers", 0)) + 1
     hidden = int(getattr(state["text_model"].config, "hidden_size", 0))
-    gb = len(S) * n_keys * n_layers * hidden * 2 / 1e9
+    state["layers"] = parse_layers(args.layers, n_layers)
+    gb = len(S) * n_keys * len(state["layers"]) * hidden * 2 / 1e9
     print(f"loaded {args.backbone} in {time.time() - t0:.0f}s on {state['embed_device']}; {n_layers} layer outputs x "
-          f"{hidden}; expected output size {gb:.1f} GB", flush=True)
+          f"{hidden}; saving layers {state['layers']}; expected output size {gb:.1f} GB", flush=True)
 
     cfg = {"mode": args.mode, "prompts": {p: (ap.DIFFICULTY_INSTRUCTION if p == "ap" else PROMPTS[p]) for p in prompts},
            "item_positions_from": prompts[0], "positions": ["last", *ITEM_POSITIONS],
            "backbone": args.backbone, "torch_dtype": args.torch_dtype, "max_length": args.max_length,
-           "n_layer_outputs": n_layers, "hidden_size": hidden, "digit_token_ids": digit_ids,
-           "layer_convention": "index 0 = token embeddings, i = output of decoder layer i, last = after final norm",
+           "n_layer_outputs": n_layers, "layers_saved": state["layers"], "hidden_size": hidden,
+           "digit_token_ids": digit_ids,
+           "layer_convention": "index 0 = token embeddings, i = output of decoder layer i, last = after final norm; "
+                               "hidden-state arrays hold layers_saved in that order, lens arrays hold every layer",
            "storage": "hidden states as uint16 = raw bfloat16 bits; decode with probe/acts_io.py",
            "seed": args.seed, "irt_run": args.irt_run, "git_commit": git_commit(),
            "torch": torch.__version__, "transformers": __import__("transformers").__version__}
     cfg_path = out_dir / "run_config.json"
     if cfg_path.exists():
         old = json.loads(cfg_path.read_text())
-        for k in ("prompts", "backbone", "max_length", "torch_dtype"):
+        for k in ("prompts", "backbone", "max_length", "torch_dtype", "layers_saved"):
             if old.get(k) != cfg[k]:
                 raise SystemExit(f"{cfg_path} has a different {k}; use another --out_dir to avoid mixing runs")
         cfg["last_is_normed"] = old.get("last_is_normed")
@@ -376,7 +402,7 @@ def main():
 
         arrays = {"item": np.array([x["item"] for x in rows]), "b": np.array([x["b"] for x in rows], np.float32),
                   "parity_maxabs": np.array([x.get("parity_maxabs", np.nan) for x in rows], np.float32),
-                  "skipped": np.array(skipped, dtype=str)}
+                  "skipped": np.array(skipped, dtype=str), "layers": np.array(state["layers"], np.int64)}
         for key in rows[0]:
             if "__" in key:
                 arrays[key] = np.stack([np.asarray(x[key]) for x in rows])
