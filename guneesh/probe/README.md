@@ -62,7 +62,11 @@ hf download GunGG4/paiec-Qwen8Binstruct-guneesh-data --repo-type dataset --local
     --include "irt/versionB_4parts_logitnormal/final/*" --include "emb/qwen3vl8b/*"
 ls data/irt/versionB_4parts_logitnormal/final/items.parquet     # must exist
 #    the item texts (data/measurement-db/<benchmark>/formatted_tables/items.parquet) are downloaded
-#    automatically for the sampled benchmarks; --no_fetch turns that off
+#    automatically for the sampled benchmarks; --no_fetch turns that off.
+#    aims-foundations/measurement-db is GATED: accept its terms on huggingface.co with your account, make a
+#    Read token (huggingface.co/settings/tokens) and log in on the server once (never commit the token):
+hf auth login
+hf auth whoami
 
 # 3. model cache in a folder you can write to with ~20 GB free (the first run downloads Qwen3-VL-8B-Instruct)
 export HF_HOME=~/hf_cache            # a real path; check free space with  df -h ~
