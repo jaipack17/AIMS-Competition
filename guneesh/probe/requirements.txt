@@ -1,0 +1,9 @@
+# GPU machine for probe/extract_activations.py (Python 3.10+, CUDA build of torch)
+torch>=2.4
+transformers>=4.57   # Qwen3-VL support (the embeddings were made with 5.12.1)
+accelerate>=1.0      # device_map="auto"
+huggingface_hub>=0.30
+numpy
+pandas
+pyarrow
+tqdm
