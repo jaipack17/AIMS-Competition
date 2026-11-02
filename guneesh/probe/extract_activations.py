@@ -163,7 +163,17 @@ def load(args):
     state = load_backbone(backbone=args.backbone, trust_remote_code=False, device_map=args.device_map,
                           torch_dtype=args.torch_dtype, attn_implementation=args.attn_implementation)
     model, text_model = state["model"], state["text_model"]
-    norm = getattr(text_model, "norm", None)
+    # the final norm sits on the text decoder: text_model.norm (text-only models) or
+    # text_model.language_model.norm (Qwen3-VL in recent transformers, where text_model is Qwen3VLModel)
+    norm = None
+    for owner in (text_model, getattr(text_model, "language_model", None),
+                  getattr(getattr(model, "model", None), "language_model", None)):
+        if owner is not None and isinstance(getattr(owner, "norm", None), torch.nn.Module):
+            norm = owner.norm
+            break
+    if norm is None:
+        cands = [m for n, m in model.named_modules() if n.endswith("language_model.norm")]
+        norm = cands[0] if len(cands) == 1 else None
     lm_head = getattr(model, "lm_head", None)
     if lm_head is None:
         lm_head = model.get_output_embeddings()
@@ -235,7 +245,7 @@ def run_one(state, ids: list[int], item_idx: np.ndarray, want_item: bool, digit_
                 "entropy": (-(p * logp).sum(-1)).cpu().numpy().astype(np.float32),
                 "top5_ids": top.indices.cpu().numpy().astype(np.int64),
                 "top5_probs": top.values.cpu().numpy().astype(np.float32)}
-    acts = {k: v.contiguous().view(torch.int16).cpu().numpy().view(np.uint16) for k, v in res.items()}
+    acts = {k: v.to(torch.bfloat16).contiguous().view(torch.int16).cpu().numpy().view(np.uint16) for k, v in res.items()}
     return acts, lens
 
 
@@ -321,8 +331,12 @@ def main():
     state = load(args)
     tok = state["tokenizer"]
     digit_ids = digit_token_ids(tok)
-    n_layers = int(getattr(state["text_model"].config, "num_hidden_layers", 0)) + 1
-    hidden = int(getattr(state["text_model"].config, "hidden_size", 0))
+    tcfg = state["text_model"].config
+    tcfg = tcfg.get_text_config() if hasattr(tcfg, "get_text_config") else tcfg   # Qwen3-VL: under text_config
+    n_layers = int(getattr(tcfg, "num_hidden_layers", 0)) + 1
+    hidden = int(getattr(tcfg, "hidden_size", 0))
+    if n_layers < 2 or hidden < 1:
+        raise SystemExit(f"cannot read num_hidden_layers / hidden_size from {type(tcfg).__name__}")
     state["layers"] = parse_layers(args.layers, n_layers)
     gb = len(S) * n_keys * len(state["layers"]) * hidden * 2 / 1e9
     print(f"loaded {args.backbone} in {time.time() - t0:.0f}s on {state['embed_device']}; {n_layers} layer outputs x "
