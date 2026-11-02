@@ -9,6 +9,7 @@ final-layer "difficulty heads") and difference-of-means probes, plus a logit-len
 |---|---|
 | `extract_activations.py` | Step 1 (GPU). Runs the model on a sample of items and saves hidden states (alternate layers by default) at 3 token positions, the logit-lens readout and a parity check. Full description in its docstring. |
 | `analyze_probes.py` | Step 2 (CPU). Probe sweep over keys × layers (diff-of-means, ridge), logit-lens rating, length baseline, direction cosines; leave-one-fold-out by benchmark. |
+| `compare_production.py` | Step 3 (CPU). Rebuilds the production ridge (all embedded items, leave-one-fold-out) and compares it per benchmark with chosen pilot probes on the same items. |
 | `acts_io.py` | Loads the saved files (`load_layer`, `load_all_layers`, `load_lens`, `consolidate`). |
 | `run_extract.sh` | Starts the extraction with `nohup` so it survives a dropped SSH connection. |
 | `requirements.txt` | Python packages for the GPU machine. |
@@ -123,6 +124,19 @@ are wide; differences under ~0.03 are noise.
 Tested on a fake run with a planted difficulty direction (15 benchmarks, hidden 512): the planted layer, position
 and logit-lens rating come out on top (r 0.35–0.51), and keys and layers with nothing planted come out at ≈ 0.
 Expected time on the real pilot (5 layers, 4 keys, hidden 4096): about 10–20 min on one CPU.
+
+## Step 3: compare with the production ridge (CPU)
+
+```bash
+python probe/compare_production.py probe/acts/pilot_l5      # after analyze_probes.py; ~8 GB RAM, ~10-30 min
+```
+
+The pilot probes are trained on ~2,400 items, so `d_vs_ref` in step 2 compares them with a ridge on the same small
+set. This script rebuilds the real production ridge from `data/emb/qwen3vl8b` (every embedded item of the training
+folds, standardised ridge, alpha by inner leave-one-fold-out) and gives the paired difference on the same benchmarks
+and items. Its overall within-benchmark r on all benchmarks should be close to 0.133 (the number in EXPERIMENTS.md);
+if not, the rebuild differs from the original and the comparison is not trustworthy. Tested: the ridge equals
+sklearn's `Ridge` to 1e-13, and on fake data with a planted direction it reaches r 0.892 (oracle 0.898).
 
 ## Tested
 
