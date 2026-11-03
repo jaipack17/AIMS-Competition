@@ -42,7 +42,9 @@ if [ -n "${CLIP:-}" ]; then
 fi
 step() { echo; echo "=== $(date '+%F %T') $*"; }
 
-step "0. data"
+step "0. python packages and data"
+python -c "import numpy, pandas, pyarrow, sklearn, torch, transformers" \
+    || { echo "missing python package (pip install scikit-learn pyarrow ... in this venv)"; exit 1; }
 for f in fold0 fold1 fold2 fold3 fold4 final; do
     [ -f "data/irt/$RUN/$f/items.parquet" ] || NEED=1
 done
