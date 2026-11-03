@@ -85,15 +85,18 @@ def main() -> None:
     fold_of = dict(zip(folds.benchmark, folds.fold))
     irt = pd.read_parquet(data / "irt" / args.irt_run / "final" / "items.parquet", columns=["item", "b"])
     b_of = pd.Series(irt.b.values, index=irt.item.values)
+    b_of = b_of[~b_of.index.duplicated()]
 
     # load every embedded item with a difficulty
     Xs, items, bench = [], [], []
-    for p in sorted(emb_dir.glob("*.npz")):
-        if p.stem not in fold_of:
-            continue
+    files = [p for p in sorted(emb_dir.glob("*.npz")) if p.stem in fold_of]
+    print(f"loading {len(files)} embedding files from {emb_dir} ...", flush=True)
+    for i, p in enumerate(files):
+        if i % 20 == 0:
+            print(f"  {i}/{len(files)} files [{time.time() - t0:.0f}s]", flush=True)
         with np.load(p, allow_pickle=True) as z:
             keys = np.array([f"{p.stem}::{t}" for t in z["task_ids"].astype(str)])
-            ok = np.isin(keys, b_of.index)
+            ok = b_of.index.get_indexer(keys) >= 0   # hash lookup; np.isin on an object Index loops in Python
             if ok.any():
                 Xs.append(z["X"][ok].astype(np.float32))
                 items.append(keys[ok])
