@@ -15,6 +15,9 @@ MIRT    (only when mirt.json is bundled; pipeline/mirt_fit.py, pipeline/mirt_rid
           embedding = Qwen3-VL-8B-Instruct, last layer, last token, of AP's no-solution prompt
           "Task statement:\n{item_content}\n\n{instruction}", 8192 tokens with left truncation, bfloat16:
           the same code path (ap_embed_core.py, verbatim AP code) that made the training embeddings.
+          When embed_spec.json is bundled ({"prompt": "rate", "layer": 20, ...}), the embedding is instead the hidden
+          state at that decoder layer, last token, of that prompt (probe_feature.py, the same code that made the
+          training features with probe/extract_feature.py); the forward pass stops after that layer.
   * load_model() raises if the model cannot be loaded (no silent fallback).
   * With PREDICTIVE_EVAL_LOCAL_SMOKE_TEST=1 (set by the kit's local check tools while importing) no model is
     loaded and b_hat is the ridge intercept, i.e. the average training difficulty. Local tools only.
@@ -88,6 +91,14 @@ if _MIRT_PATH.exists():
         MIRT = json.load(_f)
     assert MLP is None, "the MLP predicts b only: no MIRT with mlp.npz"
     assert RIDGE_COEF.shape[0] == 1 + MIRT["K"], "ridge.npz must have one row per MIRT item parameter"
+# optional probe feature (probe_feature.py): without the file, the last-layer AP embedding as before
+_SPEC_PATH = HERE / "embed_spec.json"
+EMBED_SPEC: dict | None = None
+if _SPEC_PATH.exists():
+    import probe_feature as pf
+    with open(_SPEC_PATH, encoding="utf-8") as _f:
+        EMBED_SPEC = pf.check_spec(json.load(_f))
+    MAX_LENGTH = EMBED_SPEC["max_length"]
 _STATE: dict | None = None
 
 
@@ -221,6 +232,8 @@ def _embed(text: str) -> np.ndarray:
     if _STATE is None:
         load_model()
     s = _STATE
+    if EMBED_SPEC is not None:
+        return pf.embed_texts(s["tokenizer"], s["text_model"], s["device"], [text], EMBED_SPEC).numpy()[0]
     enc = s["tokenizer"]([text], padding=True, truncation=True, max_length=MAX_LENGTH, return_tensors="pt")
     ids, mask = enc["input_ids"].to(s["device"]), enc["attention_mask"].to(s["device"])
     kwargs = {"input_ids": ids, "attention_mask": mask, "return_dict": True, "output_hidden_states": False}
@@ -257,8 +270,11 @@ def item_params(item: dict) -> np.ndarray:
     only."""
     if SMOKE_TEST:
         return RIDGE_INTERCEPTS.copy()
-    text = ap.format_qs_instruction(question_statement=str(item.get("item_content") or ""),
-                                    instruction=ap.DIFFICULTY_INSTRUCTION)
+    content = str(item.get("item_content") or "")
+    if EMBED_SPEC is not None:
+        text = pf.build_text(content, EMBED_SPEC["prompt"])
+    else:
+        text = ap.format_qs_instruction(question_statement=content, instruction=ap.DIFFICULTY_INSTRUCTION)
     path = CACHE_DIR / (hashlib.sha256(text.encode("utf-8")).hexdigest() + ".txt")
     if path.exists():
         return np.array(path.read_text().split(), dtype=np.float64)

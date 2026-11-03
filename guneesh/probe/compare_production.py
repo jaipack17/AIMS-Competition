@@ -127,8 +127,8 @@ def main() -> None:
         print(f"  fold {f}: {stats[f]['n']:,} items, Gram done [{time.time() - t0:.0f}s]", flush=True)
 
     def predict(model, idx):
-        coef, mu, ybar = model
-        return (X[idx] - mu.astype(np.float32)) @ coef.astype(np.float32) + ybar
+        coef, mu, ybar = model   # float64: at large alpha the spread of the predictions is ~1e-8, below float32 steps
+        return (X[idx].astype(np.float64) - mu) @ coef + ybar
 
     pred = np.full(len(y), np.nan)
     rows_alpha = []

@@ -12,6 +12,9 @@ Parameters written next to model.py:
               (mean final-fit b - mean held-out b_hat), sigma_item = RMS of the within-benchmark error of held-out
               b_hat: the prior scales of the label-update shifts; plus the label_update switches item_shifts and
               average_over_uncertainty (--item_shifts, --average)
+  embed_spec.json  (only with --embed_spec, e.g. data/emb/qwen3vl8b_rate_L20/spec.json) prompt and layer of the
+              probe feature the ridge was trained on: core.py then computes that feature instead of the last-layer
+              AP embedding
 The zip holds the files at its root, as tools/check_submission_zip.py requires.
 
 Run from the project root:
@@ -63,6 +66,8 @@ def main() -> None:
     ap.add_argument("--ridge_dir", default="data/ridge", help="which ridge to bundle (e.g. data/ridge_within)")
     ap.add_argument("--stretch", default="", help="stretch.json from pipeline/stretch_factor.py to bundle")
     ap.add_argument("--name_prior", default="", help="name_date_prior.json from pipeline/name_date_prior.py to bundle")
+    ap.add_argument("--embed_spec", default="", help="spec.json of probe/extract_feature.py: the ridge in --ridge_dir "
+                    "was trained on that feature")
     ap.add_argument("--item_shifts", action="store_true", help="label_update: also fit a shift per labeled item")
     ap.add_argument("--average", action="store_true",
                     help="label_update: average the prediction over the remaining uncertainty")
@@ -125,6 +130,16 @@ def main() -> None:
             json.dump({k: npr[k] for k in ("a", "b", "years_min", "years_max", "loo_rmse_line", "loo_rmse_zero")}
                       | {"source": args.name_prior}, f, indent=1)
         stretch += f"; unseen-name date prior {npr['a']:.3f} + {npr['b']:.3f} * years"
+
+    if args.embed_spec:
+        with open(args.embed_spec) as f:
+            es = json.load(f)
+        with open(os.path.join(out, "embed_spec.json"), "w") as f:
+            json.dump({k: es[k] for k in ("prompt", "layer", "position", "max_length")} | {"source": args.embed_spec},
+                      f, indent=1)
+        stretch += f"; feature {es['prompt']} prompt, layer {es['layer']}, {es['position']} token"
+    else:
+        os.remove(os.path.join(out, "probe_feature.py"))  # only used with embed_spec.json
 
     zpath = out + ".zip"
     with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as z:

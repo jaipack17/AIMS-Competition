@@ -10,6 +10,8 @@ final-layer "difficulty heads") and difference-of-means probes, plus a logit-len
 | `extract_activations.py` | Step 1 (GPU). Runs the model on a sample of items and saves hidden states (alternate layers by default) at 3 token positions, the logit-lens readout and a parity check. Full description in its docstring. |
 | `analyze_probes.py` | Step 2 (CPU). Probe sweep over keys × layers (diff-of-means, ridge), logit-lens rating, length baseline, direction cosines; leave-one-fold-out by benchmark. |
 | `compare_production.py` | Step 3 (CPU). Rebuilds the production ridge (all embedded items, leave-one-fold-out) and compares it per benchmark with chosen pilot probes on the same items. |
+| `extract_feature.py` | Step 4 (GPU). The chosen feature (default: `rate` prompt, layer 20, last token) for **every** embedded item, as a drop-in replacement for `data/emb/qwen3vl8b/`. Uses `submission_src/common/probe_feature.py`, the same code the submission runs. |
+| `run_probe_submission.sh` | Step 4 end to end in the background: extraction, ridge, stretch, submission zip, local ALC vs the ridge and MLP versions. |
 | `acts_io.py` | Loads the saved files (`load_layer`, `load_all_layers`, `load_lens`, `consolidate`). |
 | `run_extract.sh` | Starts the extraction with `nohup` so it survives a dropped SSH connection. |
 | `requirements.txt` | Python packages for the GPU machine. |
@@ -137,6 +139,42 @@ folds, standardised ridge, alpha by inner leave-one-fold-out) and gives the pair
 and items. Its overall within-benchmark r on all benchmarks should be close to 0.133 (the number in EXPERIMENTS.md);
 if not, the rebuild differs from the original and the comparison is not trustworthy. Tested: the ridge equals
 sklearn's `Ridge` to 1e-13, and on fake data with a planted direction it reaches r 0.892 (oracle 0.898).
+
+## Full-run results (115 benchmarks x up to 300 items, layers 18-30 even + 36)
+
+* The pilot's best (`ap__item_last` L24 ridge_wc, r 0.234 on 30 benchmarks) **did not replicate**: 0.158, +0.008
+  [-0.027, +0.040] vs the reference. It was the top of ~60 configurations on 30 benchmarks (winner's curse).
+* Best: **`rate__last` at layers 20-22** (last token of the 0-9 rating prompt, middle of the network):
+  ridge_wc L20 0.196 [0.161, 0.232]; vs the reference ridge (ap__last L36, same items) +0.045 [+0.011, +0.084];
+  partial r after length 0.184.
+* vs the rebuilt **production ridge** (all ~230k embedded items, `compare_production.py`; 0.142 on all items, 0.144 on
+  the full-run items): rate__last L20 ridge_wc +0.056 [+0.015, +0.104] (better on 69/110), plain ridge +0.048
+  [+0.004, +0.099], L22 ridge_wc +0.058 [+0.021, +0.103]; ap__item_last L24 +0.011 [-0.023, +0.043].
+* The model's own rating (logit lens of `rate`, no training) gives 0.153; the `ap` prompt's lens 0.054 (digit mass 0).
+
+## Step 4: submission with the probe feature (GPU, then CPU)
+
+```bash
+bash probe/run_probe_submission.sh            # LAYER=22 ... for another layer; GPU=1 ... to pick the GPU
+tail -f probe/logs/probe_sub_L20_*.log
+```
+
+It runs, resuming whatever is already done: the Hugging Face download of the IRT fits' `items.parquet` and
+`cells_binary.parquet`; `extract_feature.py` (the long step: every embedded item once, rate prompt, the forward pass
+stops after layer 20); `ridge_train.py --emb_dir ... --runs versionB_4parts_logitnormal` and `stretch_factor.py` on
+the new features; `build_submission.py ... --embed_spec <emb>/spec.json`, which bundles `embed_spec.json` and
+`probe_feature.py` so `core.py` computes the same feature at test time; the kit checks (if `Starting Kit/` is there);
+`simulate_alc.py` (150 draws, `+date`) and `analysis/paired_alc.py` against `regress_label_update_stretch2_date`
+(0.2273) and `label_update_stretch2_date_mlp` (0.2234) on the same draws. Result:
+`submissions/label_update_stretch2_date_probe_L20.zip`. Without `embed_spec.json`, `core.py` behaves exactly as before.
+
+`extract_feature.py` prints, per benchmark, the relative difference vs the vectors saved by the full run
+(`probe/acts/full_l8`): bf16 rounding gives about 1e-2 or less; about 1 means a wrong text or layer.
+
+Tested on a tiny random Qwen3-VL (transformers 5.22): the early-stopped layer equals `hidden_states[L]` exactly;
+batched (right padding) vs one at a time 7e-9; the feature equals extract_activations' `rate__last`; `core.py`
+with `embed_spec.json` gives the same feature (7e-9) and b_hat as the training extraction; the shipped
+`label_update_stretch2_date` still imports and predicts with the new `core.py`.
 
 ## Tested
 

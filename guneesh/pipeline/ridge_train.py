@@ -21,6 +21,8 @@ The held-out sanity check compares b_pred on fold f's benchmarks with the "final
 It only shows the ridge learned something; the real test is the competition-style scoring harness.
 
 Run from the project root:  python pipeline/ridge_train.py [--fits fold0,...,final] [--score r2_within --out_dir data/ridge_within]
+Other features (probe/extract_feature.py):  python pipeline/ridge_train.py --emb_dir data/emb/qwen3vl8b_rate_L20 \
+    --out_dir data/ridge_rate_L20 --runs versionB_4parts_logitnormal
 """
 from __future__ import annotations
 
@@ -128,11 +130,15 @@ def main() -> None:
     ap.add_argument("--out_dir", default=OUT_DIR)
     ap.add_argument("--fits", default=",".join(FITS))
     ap.add_argument("--inner_folds", type=int, default=5)
+    ap.add_argument("--emb_dir", default=EMB_DIR, help="feature files (<benchmark>.npz with X, task_ids)")
+    ap.add_argument("--runs", default=",".join(RUNS), help="IRT runs to train on (comma-separated)")
     args = ap.parse_args()
 
+    RUNS[:] = args.runs.split(",")  # setup_fit / is_done read the module-level list
     t0 = time.time()
-    X, items, bench = load_embeddings()
-    print(f"embeddings {X.shape} from {len(np.unique(bench))} benchmarks ({time.time() - t0:.0f} s)", flush=True)
+    X, items, bench = load_embeddings(args.emb_dir)
+    print(f"embeddings {X.shape} from {len(np.unique(bench))} benchmarks in {args.emb_dir} ({time.time() - t0:.0f} s)",
+          flush=True)
     folds = pd.read_csv(os.path.join(IRT_DIR, "folds.csv"))
     fold_of = dict(zip(folds.benchmark, "fold" + folds.fold.astype(str)))
     assert set(np.unique(bench)) == set(fold_of), "embedded benchmarks differ from the 115 in folds.csv"

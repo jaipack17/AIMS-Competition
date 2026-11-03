@@ -11,10 +11,12 @@ gain is measured on data not used to choose k, and the between-benchmark slope (
 Also written: sigma_delta_stretched, the prior scale of the label-update benchmark shift for stretched predictions
 (RMS over held-out benchmarks of mean b - mean b_tilde), which build_submission.py uses with --stretch.
 
-Output: data/ridge/<run>/stretch.json.  Run from the project root:  python pipeline/stretch_factor.py
+Output: <ridge_dir>/<run>/stretch.json.  Run from the project root:  python pipeline/stretch_factor.py
+  other features:  python pipeline/stretch_factor.py --emb_dir data/emb/qwen3vl8b_rate_L20 --ridge_dir data/ridge_rate_L20
 """
 from __future__ import annotations
 
+import argparse
 import json
 import os
 
@@ -22,16 +24,22 @@ import numpy as np
 import pandas as pd
 
 from fast_ridge import Scaler, fold_sums, solve
-from ridge_train import IRT_DIR, OUT_DIR, RUNS, item_b, load_embeddings, setup_fit
+from ridge_train import EMB_DIR, IRT_DIR, OUT_DIR, RUNS, item_b, load_embeddings, setup_fit
 
 RUN = RUNS[0]  # versionB_4parts_logitnormal, the run the submissions use
 
 
 def main() -> None:
-    X, items, bench = load_embeddings()
+    pa = argparse.ArgumentParser()
+    pa.add_argument("--emb_dir", default=EMB_DIR, help="the features the ridge in --ridge_dir was trained on")
+    pa.add_argument("--ridge_dir", default=OUT_DIR)
+    args = pa.parse_args()
+    RUNS[:] = [RUN]  # setup_fit reads b of every run in RUNS; only this one is needed
+    OUT = args.ridge_dir
+    X, items, bench = load_embeddings(args.emb_dir)
     folds = pd.read_csv(os.path.join(IRT_DIR, "folds.csv"))
     fold_of = dict(zip(folds.benchmark, "fold" + folds.fold.astype(str)))
-    alpha = float(np.load(os.path.join(OUT_DIR, RUN, "final", "model.npz"))["alpha"])
+    alpha = float(np.load(os.path.join(OUT, RUN, "final", "model.npz"))["alpha"])
     b_final = item_b(RUN, "final", items)
     parts, fold_centres = [], {}
     for f in range(5):
@@ -61,7 +69,7 @@ def main() -> None:
     g = P.groupby(["fold", "benchmark"])[["b", "b_hat"]].mean()
     gc = g - g.mean()
     between = float((gc.b * gc.b_hat).sum() / (gc.b_hat ** 2).sum())
-    intercept_final = float(np.load(os.path.join(OUT_DIR, RUN, "final", "model.npz"))["intercept"])
+    intercept_final = float(np.load(os.path.join(OUT, RUN, "final", "model.npz"))["intercept"])
     # prior scale of the label-update benchmark shift delta for STRETCHED predictions (as in build_submission.py:
     # RMS over held-out benchmarks of mean b - mean b_tilde); each fold's own centre is its training mean
     stretched = []
@@ -74,7 +82,7 @@ def main() -> None:
     out = {"run": RUN, "alpha": alpha, "center": intercept_final, "k": k, "between_benchmark_slope": between,
            "sigma_delta_stretched": sigma_delta,
            "n_items": int(len(P)), "held_out_checks": held_out_checks}
-    with open(os.path.join(OUT_DIR, RUN, "stretch.json"), "w") as fh:
+    with open(os.path.join(OUT, RUN, "stretch.json"), "w") as fh:
         json.dump(out, fh, indent=1)
     print(f"k = {k:.3f} (pooled over {len(P):,} held-out items); between-benchmark slope {between:.3f}; "
           f"center c = {intercept_final:.4f}; sigma_delta for stretched b_hat {sigma_delta:.3f}")
