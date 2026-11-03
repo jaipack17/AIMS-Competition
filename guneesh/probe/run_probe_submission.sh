@@ -5,6 +5,8 @@
 #   bash probe/run_probe_submission.sh                  # rate prompt, layer 20
 #   LAYER=22 bash probe/run_probe_submission.sh         # another layer (own folders)
 #   GPU=1 bash probe/run_probe_submission.sh            # choose the GPU (default 0)
+#   CLIP=1 bash probe/run_probe_submission.sh           # clip every feature dimension first (probe/feature_clip.py):
+#                                                       # own ridge folder and submission name (..._clip)
 #
 # Steps (log: probe/logs/probe_sub_L<layer>_<time>.log):
 #   0. data from Hugging Face: every IRT fit's items.parquet (training targets) and cells_binary.parquet (simulation)
@@ -20,7 +22,7 @@ cd "$(dirname "$0")/.."           # project root (guneesh/)
 if [ "${1:-}" != "--inner" ]; then
     export CUDA_VISIBLE_DEVICES="${GPU:-0}" PYTHONUNBUFFERED=1 TOKENIZERS_PARALLELISM=false
     mkdir -p probe/logs
-    LOG="probe/logs/probe_sub_L${LAYER:-20}_$(date +%Y%m%d_%H%M%S).log"
+    LOG="probe/logs/probe_sub_L${LAYER:-20}${CLIP:+_clip}_$(date +%Y%m%d_%H%M%S).log"
     nohup bash "$0" --inner > "$LOG" 2>&1 &
     echo "$!" > "probe/logs/probe_sub.pid"
     echo "started PID $! on GPU $CUDA_VISIBLE_DEVICES"
@@ -34,6 +36,10 @@ RUN=versionB_4parts_logitnormal
 EMB="data/emb/qwen3vl8b_rate_L${LAYER}"
 RIDGE="data/ridge_rate_L${LAYER}"
 NAME="label_update_stretch2_date_probe_L${LAYER}"
+CLIPARG=()
+if [ -n "${CLIP:-}" ]; then
+    RIDGE="${RIDGE}_clip"; NAME="${NAME}_clip"; CLIPARG=(--clip "$EMB/clip.json")
+fi
 step() { echo; echo "=== $(date '+%F %T') $*"; }
 
 step "0. data"
@@ -51,16 +57,21 @@ step "1. extract the feature (rate prompt, layer $LAYER) for every embedded item
 python -u probe/extract_feature.py --prompt rate --layer "$LAYER" --out_dir "$EMB"
 [ "$(ls "$EMB"/*.npz | wc -l)" -eq "$(ls data/emb/qwen3vl8b/*.npz | wc -l)" ] || { echo "extraction incomplete"; exit 1; }
 
+if [ -n "${CLIP:-}" ]; then
+    step "1b. clipping bounds"
+    [ -f "$EMB/clip.json" ] || python -u probe/feature_clip.py "$EMB"
+fi
+
 step "2. ridge (fold0..4 + final)"
-python -u pipeline/ridge_train.py --emb_dir "$EMB" --out_dir "$RIDGE" --runs "$RUN"
+python -u pipeline/ridge_train.py --emb_dir "$EMB" --out_dir "$RIDGE" --runs "$RUN" ${CLIPARG[@]+"${CLIPARG[@]}"}
 
 step "3. stretch factor"
-python -u pipeline/stretch_factor.py --emb_dir "$EMB" --ridge_dir "$RIDGE"
+python -u pipeline/stretch_factor.py --emb_dir "$EMB" --ridge_dir "$RIDGE" ${CLIPARG[@]+"${CLIPARG[@]}"}
 
 step "4. build the submission"
 python pipeline/build_submission.py --variant label_update --name "$NAME" --ridge_dir "$RIDGE" \
     --stretch "$RIDGE/$RUN/stretch.json" --name_prior "data/irt/$RUN/final/name_date_prior.json" \
-    --embed_spec "$EMB/spec.json"
+    --embed_spec "$EMB/spec.json" ${CLIPARG[@]+"${CLIPARG[@]}"}
 
 step "5. checks and local ALC"
 KIT="Starting Kit/tools"
@@ -71,5 +82,8 @@ else
     echo "($KIT not found: kit checks skipped; run them where the starting kit is)"
 fi
 python -u analysis/simulate_alc.py --sub "$NAME" --draws 30 --configs +date
-python analysis/paired_alc.py "$NAME" regress_label_update_stretch2_date label_update_stretch2_date_mlp
+BASES=(regress_label_update_stretch2_date label_update_stretch2_date_mlp)
+[ -n "${CLIP:-}" ] && [ -f "analysis/simulate_alc_label_update_stretch2_date_probe_L${LAYER}.csv" ] \
+    && BASES+=("label_update_stretch2_date_probe_L${LAYER}")
+python analysis/paired_alc.py "$NAME" "${BASES[@]}"
 step "ALL DONE: submissions/$NAME.zip"

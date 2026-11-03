@@ -169,7 +169,17 @@ the new features; `build_submission.py ... --embed_spec <emb>/spec.json`, which 
 `submissions/label_update_stretch2_date_probe_L20.zip`. Without `embed_spec.json`, `core.py` behaves exactly as before.
 
 `extract_feature.py` prints, per benchmark, the relative difference vs the vectors saved by the full run
-(`probe/acts/full_l8`): bf16 rounding gives about 1e-2 or less; about 1 means a wrong text or layer.
+(`probe/acts/full_l8`): batched bf16 at layer 20 gives a median of about 1.5-2.5e-2 and a max of about 0.1-0.3.
+
+**Massive activation at the last token.** About one item in a few hundred has a max of 1-66: on the real run, the
+same tokens (equal token counts) give a vector dominated by dimension 2276 (400-6000, normal vectors have norm ~90
+and |x| <= ~60) in one run and not in the other, in either direction. So whether the spike fires flips with bf16
+rounding; it would flip at test time too. After standardisation a spike is dozens of SDs, and the stretch (k ~ 4)
+multiplies the resulting b_hat error. `CLIP=1 bash probe/run_probe_submission.sh` (after the unclipped run, it
+reuses the extracted features) builds `..._probe_L20_clip`: `probe/feature_clip.py` computes per-dimension bounds
+(median +- 8 robust SDs, no labels) into `<emb>/clip.json`; `ridge_train.py` / `stretch_factor.py --clip` train on
+clipped features and `build_submission.py --clip` bundles `feature_clip.json`, which `core.py` applies before the
+ridge. Its `paired_alc` table also compares it with the unclipped version.
 
 Tested on a tiny random Qwen3-VL (transformers 5.22): the early-stopped layer equals `hidden_states[L]` exactly;
 batched (right padding) vs one at a time 7e-9; the feature equals extract_activations' `rate__last`; `core.py`

@@ -12,6 +12,7 @@ Parameters written next to model.py:
               (mean final-fit b - mean held-out b_hat), sigma_item = RMS of the within-benchmark error of held-out
               b_hat: the prior scales of the label-update shifts; plus the label_update switches item_shifts and
               average_over_uncertainty (--item_shifts, --average)
+  feature_clip.json  (only with --clip) per-dimension bounds the probe feature is clipped to before the ridge
   embed_spec.json  (only with --embed_spec, e.g. data/emb/qwen3vl8b_rate_L20/spec.json) prompt and layer of the
               probe feature the ridge was trained on: core.py then computes that feature instead of the last-layer
               AP embedding
@@ -68,6 +69,8 @@ def main() -> None:
     ap.add_argument("--name_prior", default="", help="name_date_prior.json from pipeline/name_date_prior.py to bundle")
     ap.add_argument("--embed_spec", default="", help="spec.json of probe/extract_feature.py: the ridge in --ridge_dir "
                     "was trained on that feature")
+    ap.add_argument("--clip", default="", help="clip.json of probe/feature_clip.py the ridge was trained with "
+                    "(with --embed_spec): bundled as feature_clip.json")
     ap.add_argument("--item_shifts", action="store_true", help="label_update: also fit a shift per labeled item")
     ap.add_argument("--average", action="store_true",
                     help="label_update: average the prediction over the remaining uncertainty")
@@ -131,6 +134,8 @@ def main() -> None:
                       | {"source": args.name_prior}, f, indent=1)
         stretch += f"; unseen-name date prior {npr['a']:.3f} + {npr['b']:.3f} * years"
 
+    if args.clip and not args.embed_spec:
+        raise SystemExit("--clip needs --embed_spec")
     if args.embed_spec:
         with open(args.embed_spec) as f:
             es = json.load(f)
@@ -138,6 +143,9 @@ def main() -> None:
             json.dump({k: es[k] for k in ("prompt", "layer", "position", "max_length")} | {"source": args.embed_spec},
                       f, indent=1)
         stretch += f"; feature {es['prompt']} prompt, layer {es['layer']}, {es['position']} token"
+        if args.clip:
+            shutil.copy(args.clip, os.path.join(out, "feature_clip.json"))
+            stretch += f", clipped ({args.clip})"
     else:
         os.remove(os.path.join(out, "probe_feature.py"))  # only used with embed_spec.json
 

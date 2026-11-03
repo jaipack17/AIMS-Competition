@@ -17,7 +17,8 @@ MIRT    (only when mirt.json is bundled; pipeline/mirt_fit.py, pipeline/mirt_rid
           the same code path (ap_embed_core.py, verbatim AP code) that made the training embeddings.
           When embed_spec.json is bundled ({"prompt": "rate", "layer": 20, ...}), the embedding is instead the hidden
           state at that decoder layer, last token, of that prompt (probe_feature.py, the same code that made the
-          training features with probe/extract_feature.py); the forward pass stops after that layer.
+          training features with probe/extract_feature.py); the forward pass stops after that layer. With
+          feature_clip.json, every dimension is first clipped to its [lo, hi] (probe/feature_clip.py), as in training.
   * load_model() raises if the model cannot be loaded (no silent fallback).
   * With PREDICTIVE_EVAL_LOCAL_SMOKE_TEST=1 (set by the kit's local check tools while importing) no model is
     loaded and b_hat is the ridge intercept, i.e. the average training difficulty. Local tools only.
@@ -99,6 +100,14 @@ if _SPEC_PATH.exists():
     with open(_SPEC_PATH, encoding="utf-8") as _f:
         EMBED_SPEC = pf.check_spec(json.load(_f))
     MAX_LENGTH = EMBED_SPEC["max_length"]
+# optional per-dimension clipping of the probe feature (probe/feature_clip.py), as in training
+_CLIP_PATH = HERE / "feature_clip.json"
+FEATURE_CLIP: tuple | None = None
+if _CLIP_PATH.exists():
+    with open(_CLIP_PATH, encoding="utf-8") as _f:
+        _c = json.load(_f)
+    FEATURE_CLIP = (np.asarray(_c["lo"], np.float32), np.asarray(_c["hi"], np.float32))
+    assert EMBED_SPEC is not None and FEATURE_CLIP[0].shape == (EMB_DIM,), "feature_clip.json needs embed_spec.json"
 _STATE: dict | None = None
 
 
@@ -278,7 +287,10 @@ def item_params(item: dict) -> np.ndarray:
     path = CACHE_DIR / (hashlib.sha256(text.encode("utf-8")).hexdigest() + ".txt")
     if path.exists():
         return np.array(path.read_text().split(), dtype=np.float64)
-    x = _embed(text).astype(np.float64)
+    x = _embed(text)
+    if FEATURE_CLIP is not None:
+        x = np.clip(x.astype(np.float32), FEATURE_CLIP[0], FEATURE_CLIP[1])
+    x = x.astype(np.float64)
     if x.shape != (EMB_DIM,) or not np.isfinite(x).all():
         raise RuntimeError(f"bad embedding: shape {x.shape}")
     if MLP is not None:

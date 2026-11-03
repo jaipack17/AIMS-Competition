@@ -33,10 +33,11 @@ def main() -> None:
     pa = argparse.ArgumentParser()
     pa.add_argument("--emb_dir", default=EMB_DIR, help="the features the ridge in --ridge_dir was trained on")
     pa.add_argument("--ridge_dir", default=OUT_DIR)
+    pa.add_argument("--clip", default="", help="clip.json the ridge was trained with (ridge_train.py --clip)")
     args = pa.parse_args()
     RUNS[:] = [RUN]  # setup_fit reads b of every run in RUNS; only this one is needed
     OUT = args.ridge_dir
-    X, items, bench = load_embeddings(args.emb_dir)
+    X, items, bench = load_embeddings(args.emb_dir, clip=args.clip)
     folds = pd.read_csv(os.path.join(IRT_DIR, "folds.csv"))
     fold_of = dict(zip(folds.benchmark, "fold" + folds.fold.astype(str)))
     alpha = float(np.load(os.path.join(OUT, RUN, "final", "model.npz"))["alpha"])

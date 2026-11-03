@@ -50,8 +50,19 @@ MIN_ALPHA = 1e-4  # ... and x0.1 at a time down to this if it sits on the bottom
 MAX_ALPHA = 1e12  # if the best alpha sits on the top edge, the grid grows x10 at a time up to this
 
 
-def load_embeddings(emb_dir: str = EMB_DIR, benchmarks=None, cap: int | None = None):
-    """All embedding files -> X (n, 4096) float32, item keys "<benchmark>::<item_id>", benchmark per row."""
+def load_clip(path: str):
+    """(lo, hi) float32 per-dimension bounds of probe/feature_clip.py, or None for an empty path."""
+    if not path:
+        return None
+    with open(path) as f:
+        c = json.load(f)
+    return np.asarray(c["lo"], np.float32), np.asarray(c["hi"], np.float32)
+
+
+def load_embeddings(emb_dir: str = EMB_DIR, benchmarks=None, cap: int | None = None, clip: str = ""):
+    """All embedding files -> X (n, 4096) float32, item keys "<benchmark>::<item_id>", benchmark per row.
+    clip: clip.json of probe/feature_clip.py; every dimension is then clipped to its [lo, hi]."""
+    bounds = load_clip(clip)
     X, items, bench = [], [], []
     for path in sorted(glob.glob(os.path.join(emb_dir, "*.npz"))):
         b = os.path.basename(path)[:-4]
@@ -61,7 +72,10 @@ def load_embeddings(emb_dir: str = EMB_DIR, benchmarks=None, cap: int | None = N
             x, ids = z["X"], z["task_ids"].astype(str)
         if cap is not None:
             x, ids = x[:cap], ids[:cap]
-        X.append(x.astype(np.float32, copy=False))
+        x = x.astype(np.float32, copy=False)
+        if bounds is not None:
+            x = np.clip(x, bounds[0], bounds[1])
+        X.append(x)
         items += [f"{b}::{i}" for i in ids]
         bench += [b] * len(ids)
     return np.concatenate(X), np.array(items), np.array(bench)
@@ -131,12 +145,13 @@ def main() -> None:
     ap.add_argument("--fits", default=",".join(FITS))
     ap.add_argument("--inner_folds", type=int, default=5)
     ap.add_argument("--emb_dir", default=EMB_DIR, help="feature files (<benchmark>.npz with X, task_ids)")
+    ap.add_argument("--clip", default="", help="clip.json of probe/feature_clip.py (clip every dimension)")
     ap.add_argument("--runs", default=",".join(RUNS), help="IRT runs to train on (comma-separated)")
     args = ap.parse_args()
 
     RUNS[:] = args.runs.split(",")  # setup_fit / is_done read the module-level list
     t0 = time.time()
-    X, items, bench = load_embeddings(args.emb_dir)
+    X, items, bench = load_embeddings(args.emb_dir, clip=args.clip)
     print(f"embeddings {X.shape} from {len(np.unique(bench))} benchmarks in {args.emb_dir} ({time.time() - t0:.0f} s)",
           flush=True)
     folds = pd.read_csv(os.path.join(IRT_DIR, "folds.csv"))
