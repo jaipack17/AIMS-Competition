@@ -160,7 +160,10 @@ def main() -> None:
 
     # texts and token counts of every benchmark to do (for the ETA)
     work = {}
-    for bench in todo:
+    print(f"reading and tokenizing the texts of {len(todo)} benchmarks ...", flush=True)
+    for n, bench in enumerate(todo):
+        if n % 10 == 0:
+            print(f"  {n}/{len(todo)} [{time.time() - t0:.0f}s]", flush=True)
         with np.load(ref_dir / f"{bench}.npz", allow_pickle=True) as z:
             task_ids = z["task_ids"].astype(str)
         it = pd.read_parquet(fetch_items_table(data_dir, bench, not args.no_fetch), columns=["item_id", "content"])
